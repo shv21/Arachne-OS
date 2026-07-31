@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color:black ;
+
+}
+
+body::before {
+    content: "";
+    position:fixed;
+    inset: 0;
+
+    /* background-image: url(""); */
+    background-size:cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background:
+        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+        url("./images/download.jfif") center/cover no-repeat;
+
+    transform: scale(1.05);
+
+    z-index: -1;
+}
