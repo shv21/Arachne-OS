@@ -1,25 +1,123 @@
-body {
+* {
     margin: 0;
-    overflow: hidden;
-    background-color:black ;
-
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body::before {
-    content: "";
-    position:fixed;
-    inset: 0;
+body {
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-    /* background-image: url(""); */
-    background-size:cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* Desktop */
+
+.descktop-main-screen {
+    height: 100vh;
+    width: 100vw;
+    background: url("./images/spider-man-logo-10k-3840x2160-15274.png")
+        center/cover no-repeat;
+
+    position: relative;
+}
+
+/* Lock Screen */
+
+.descktop-lockScreen {
+    height: 100vh;
+    width: 100vw;
 
     background:
-        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-        url("./images/download.jfif") center/cover no-repeat;
+        linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.7)),
+        url("./images/spider-man-across-3840x2160-11476.png")
+        center/cover no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+}
 
-    transform: scale(1.05);
+.hide{
+    display:none;
+}
 
-    z-index: -1;
+/* Desktop Icons */
+
+.sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+    padding:20px;
+}
+
+/* Single App */
+
+.app{
+    width:90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    cursor:pointer;
+}
+
+/* Hover Effect */
+
+.app:hover{
+    color: white;
+    background:black;
+    border-radius: 15px;
+    box-shadow: 0 0 400px  rgb(8, 247, 8);
+}
+
+/* Icon */
+
+.app img{
+    width:64px;
+    height:64px;
+    border-radius:15px;
+    background-color: black;
+}
+
+/* Name */
+
+.app p{
+    margin-top:6px;
+    color:white;
+    text-align:center;
+    font-size:14px;
+}
+
+/* Start Button */
+
+.start{
+    position:absolute;
+
+    bottom:20px;
+    left:50%;
+
+    transform:translateX(-50%);
+}
+
+/* lock screen start button */
+.login-btn {
+  padding: 18px 50px;
+  border-radius: 50px;
+  border: 1px solid #00ffff;
+  background: transparent;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  justify-self: center;
+  align-self: center;
+}
+
+.login-btn:hover {
+  background: #00ffff;
+  color: black;
+  box-shadow: 0 0 30px 1000px #091610a2;
+}
+
+.hide {
+    display: none;
 }
