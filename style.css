@@ -22,7 +22,7 @@ body {
 
 .descktop-lockScreen {
     height: 100vh;
-    width: 100vw;
+   position: relative;
 
     background:
         url("./images/spider-man-across-3840x2160-11476.png")
@@ -30,7 +30,20 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+
 }
+
+.overlay {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+}
+
+.descktop-lockScreen:has(.login-btn:hover) .overlay {
+    opacity: 0;
+}
+
 
 .hide{
     display:none;
@@ -96,12 +109,9 @@ transform:rotate(-8deg);
 }
 
 
-
-
-
-
 /* lock screen start button */
 .login-btn {
+        z-index:2;
   padding: 18px 50px;
   border-radius: 50px;
   border: 1px solid #00ffff;
@@ -116,10 +126,11 @@ transform:rotate(-8deg);
 }
 
 .login-btn:hover {
+    /* opacity: 0; */
 color: black;   
-transform: scale(1.1);
+/* transform: scale(1.1); */
 background: #00ffff;
-box-shadow: 0 0 0 1000px #000;
+/* box-shadow: 0 0 0 1000px #000; */
 }
 
 .hide {
