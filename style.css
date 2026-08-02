@@ -42,59 +42,105 @@ body {
 /* Desktop Icons */
 
 .sidebar{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
 
-    padding:20px;
+    display:flex;
+    flex-direction:row;
+    gap:25px;
+
+    padding:15px 30px;
+
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:30px;
+
+    box-shadow:
+    0 15px 45px rgba(0,0,0,.45);
 }
 
-/* Single App */
 
 .app{
-    width:90px;
+    width:80px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    cursor:pointer;
+
+    transition:.35s;
 }
 
-/* Hover Effect */
+.app p {
+    color: white;
+}
 
 .app:hover{
-    color: white;
-    background:black;
-    border-radius: 15px;
-    box-shadow: 0 0 400px  rgb(8, 247, 8);
+    cursor: pointer;
+    transform:
+        translateY(-15px)
+        scale(1.1);
+
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
 }
 
-/* Icon */
 
 .app img{
-    width:64px;
-    height:64px;
-    border-radius:15px;
-    background-color: black;
+
+    width:68px;
+    height:68px;
+
+    border-radius:22px;
+
+    transition:.35s;
 }
 
-/* Name */
+.app:hover img{
 
-.app p{
-    margin-top:6px;
-    color:white;
-    text-align:center;
-    font-size:14px;
+    box-shadow:
+        0 0 12px #00e1ff,
+        0 0 30px #00e1ff,
+        0 0 60px #00e1ff;
+
+    transform:rotate(-5deg);
 }
 
-/* Start Button */
 
-.start{
+
+.os-button{
+
     position:absolute;
 
-    bottom:20px;
-    left:50%;
+    bottom:30px;
+    right:35px;
 
-    transform:translateX(-50%);
+    width:65px;
+    height:65px;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:28px;
+
+    background:linear-gradient(
+        135deg,
+        #6f00ff,
+        #00bfff
+    );
+
+    cursor:pointer;
+
+    transition:.35s;
+}
+
+.os-button:hover{
+transform:rotate(180deg) scale(1.1);
+box-shadow: 0 0 30px cyan;
 }
 
 /* lock screen start button */

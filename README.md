@@ -1,4 +1,17 @@
+[![Hack Club](https://img.shields.io/badge/Stardance-WebOS%201-blue)](https://hackclub.com/)
+
 # 🕷️ Arachne-OS
+
+
+## 🚀 My Current Project
+
+### [Arachne-OS](https://github.com/your-username/Arachne-OS)
+> A desktop operating system that runs entirely in your web browser.
+
+I am currently building this project for the **Hack Club Stardance Challenge**. 
+It is a WebOS built with HTML, CSS, and JavaScript, featuring draggable windows, a live taskbar clock, and a custom cyberpunk aesthetic.
+
+
 
 ### *Weaving a web-based desktop experience, one thread at a time.*
 
