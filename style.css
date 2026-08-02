@@ -14,9 +14,7 @@ body {
 .descktop-main-screen {
     height: 100vh;
     width: 100vw;
-    background: url("./images/spider-man-logo-10k-3840x2160-15274.png")
-        center/cover no-repeat;
-
+    background: url("./images/spider-man-logo-10k-3840x2160-15274.png") center/cover no-repeat;
     position: relative;
 }
 
@@ -27,7 +25,6 @@ body {
     width: 100vw;
 
     background:
-        linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.7)),
         url("./images/spider-man-across-3840x2160-11476.png")
         center/cover no-repeat;
         display: flex;
@@ -54,7 +51,7 @@ body {
     padding:15px 30px;
 
     background:rgba(255,255,255,.08);
-    backdrop-filter:blur(18px);
+    backdrop-filter:blur(3px);
     border:1px solid rgba(255,255,255,.2);
     border-radius:30px;
 
@@ -78,9 +75,7 @@ body {
 
 .app:hover{
     cursor: pointer;
-    transform:
-        translateY(-15px)
-        scale(1.1);
+    transform: translateY(-19px) scale(1.1);
 
     background:rgba(255,255,255,.08);
     border-radius:20px;
@@ -89,59 +84,21 @@ body {
 
 .app img{
 
-    width:68px;
-    height:68px;
-
-    border-radius:22px;
-
-    transition:.35s;
+width:68px;
+height:68px;
+border-radius:22px;
+transition:.35s;
 }
 
 .app:hover img{
-
-    box-shadow:
-        0 0 12px #00e1ff,
-        0 0 30px #00e1ff,
-        0 0 60px #00e1ff;
-
-    transform:rotate(-5deg);
+box-shadow: 0 0 50px 10px #00e1ff;
+transform:rotate(-8deg);
 }
 
 
 
-.os-button{
 
-    position:absolute;
 
-    bottom:30px;
-    right:35px;
-
-    width:65px;
-    height:65px;
-
-    border-radius:50%;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    font-size:28px;
-
-    background:linear-gradient(
-        135deg,
-        #6f00ff,
-        #00bfff
-    );
-
-    cursor:pointer;
-
-    transition:.35s;
-}
-
-.os-button:hover{
-transform:rotate(180deg) scale(1.1);
-box-shadow: 0 0 30px cyan;
-}
 
 /* lock screen start button */
 .login-btn {
@@ -159,9 +116,10 @@ box-shadow: 0 0 30px cyan;
 }
 
 .login-btn:hover {
-  background: #00ffff;
-  color: black;
-  box-shadow: 0 0 30px 1000px #091610a2;
+color: black;   
+transform: scale(1.1);
+background: #00ffff;
+box-shadow: 0 0 0 1000px #000;
 }
 
 .hide {
