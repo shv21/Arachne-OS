@@ -152,6 +152,7 @@ body {
   align-items: center;
 
   transition: 0.35s;
+  cursor: pointer;
 }
 
 .app1 img {
@@ -169,5 +170,215 @@ body {
   transform: rotate(-8deg);
 }
 .hide {
-  display: none;
+  display: none !important;
 }
+
+/* ==========================================
+   Window Architecture & Glassmorphism (Arachne OS Theme)
+   ========================================== */
+
+.window {
+  position: absolute;
+  top: 15%;
+  left: 35%;
+  background: rgba(12, 10, 20, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 26px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(0, 225, 255, 0.15), 0 0 15px rgba(255, 0, 80, 0.15);
+  z-index: 100;
+  user-select: none;
+  overflow: hidden;
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.window:hover {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 225, 255, 0.3), 0 0 25px rgba(255, 0, 80, 0.25);
+  border-color: rgba(0, 225, 255, 0.4);
+}
+
+.window-header {
+  height: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  cursor: move;
+}
+
+.window-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 0 10px rgba(0, 225, 255, 0.7);
+}
+
+.window-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 0 6px #00ffff);
+}
+
+.window-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.win-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.win-btn.minimize-btn:hover {
+  background: rgba(0, 225, 255, 0.8);
+  color: #000;
+  border-color: #00ffff;
+  box-shadow: 0 0 15px #00ffff;
+}
+
+.win-btn.close-btn:hover {
+  background: rgba(255, 35, 75, 0.9);
+  color: #fff;
+  border-color: #ff234b;
+  box-shadow: 0 0 15px #ff234b;
+}
+
+/* ==========================================
+   Calculator Component (Spider-Man / Web Theme)
+   ========================================== */
+
+.calculator-window {
+  width: 320px;
+}
+
+.calculator-body {
+  padding: 20px;
+}
+
+.calc-screen {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  text-align: right;
+  backdrop-filter: blur(5px);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 225, 255, 0.1);
+}
+
+.calc-history {
+  height: 18px;
+  font-size: 13px;
+  color: rgba(0, 225, 255, 0.6);
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calc-output {
+  font-size: 34px;
+  font-weight: 800;
+  color: #00ffff;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(0, 255, 255, 0.7);
+  word-wrap: break-word;
+  word-break: break-all;
+  margin-top: 4px;
+}
+
+.calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.calc-btn {
+  height: 52px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+
+.calc-btn:hover {
+  background: rgba(0, 225, 255, 0.18);
+  border-color: #00ffff;
+  color: #00ffff;
+  box-shadow: 0 0 25px 5px rgba(0, 225, 255, 0.4);
+  transform: translateY(-4px) scale(1.06);
+}
+
+.calc-btn:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 0 10px rgba(0, 225, 255, 0.6);
+}
+
+.calc-btn.op-btn {
+  background: rgba(255, 0, 75, 0.15);
+  border-color: rgba(255, 0, 75, 0.4);
+  color: #ff3366;
+  font-size: 20px;
+}
+
+.calc-btn.op-btn:hover {
+  background: #ff004c;
+  border-color: #ff004c;
+  color: #ffffff;
+  box-shadow: 0 0 25px 5px rgba(255, 0, 76, 0.6);
+}
+
+.calc-btn.action-btn {
+  background: rgba(0, 225, 255, 0.12);
+  border-color: rgba(0, 225, 255, 0.35);
+  color: #00ffff;
+}
+
+.calc-btn.action-btn:hover {
+  background: #00ffff;
+  border-color: #00ffff;
+  color: #000000;
+  box-shadow: 0 0 25px 5px rgba(0, 225, 255, 0.7);
+}
+
+.calc-btn.equals-btn {
+  background: linear-gradient(135deg, #ff0055, #00ffff);
+  border: none;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 22px;
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+}
+
+.calc-btn.equals-btn:hover {
+  box-shadow: 0 0 35px 8px rgba(0, 225, 255, 0.7);
+  transform: translateY(-4px) scale(1.08);
+}
+
+

@@ -15,7 +15,7 @@
          <button class="login-btn">Unlock OS</button>
     </div>
 
-    <div class="descktop-main-screen hdie">
+    <div class="descktop-main-screen hide">
 
         <div class ="sidebar">
 
@@ -33,7 +33,7 @@
             <!-- Start Button -->
             <div class="start">
                 <div class="app">
-                    <img src="./incons/5.jfif" alt="Start">
+                    <img src="./incons/start.jfif" alt="Start">
                     <p>Start</p>
                 </div>
             </div>
@@ -47,13 +47,63 @@
                 <p>Chrome</p>
             </div>
     
-            <div class="app1 ">
+            <div class="app1">
                 <img src="./incons/2.jfif" alt="VS Code">
                 <p>VS Code</p>
+            </div>
+
+            <div class="app1 calc-app-btn" id="calcAppBtn">
+                <img src="./incons/4.jfif" alt="Calculator">
+                <p>Calculator</p>
             </div>
            
 
         </div>
+
+        <!-- Calculator Window -->
+        <div class="window calculator-window hide" id="calcWindow">
+            <div class="window-header" id="calcHeader">
+                <div class="window-title">
+                    <span class="window-icon">🕸️</span> Arachne Calc
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn minimize-btn" id="minCalcBtn" title="Minimize">−</button>
+                    <button class="win-btn close-btn" id="closeCalcBtn" title="Close">✕</button>
+                </div>
+            </div>
+            <div class="calculator-body">
+                <div class="calc-screen">
+                    <div class="calc-history" id="calcHistory"></div>
+                    <div class="calc-output" id="calcOutput">0</div>
+                </div>
+                <div class="calc-buttons">
+                    <button class="calc-btn action-btn" data-action="clear">C</button>
+                    <button class="calc-btn action-btn" data-action="toggle-sign">±</button>
+                    <button class="calc-btn action-btn" data-action="percent">%</button>
+                    <button class="calc-btn op-btn" data-op="/">÷</button>
+                    
+                    <button class="calc-btn num-btn" data-num="7">7</button>
+                    <button class="calc-btn num-btn" data-num="8">8</button>
+                    <button class="calc-btn num-btn" data-num="9">9</button>
+                    <button class="calc-btn op-btn" data-op="*">×</button>
+                    
+                    <button class="calc-btn num-btn" data-num="4">4</button>
+                    <button class="calc-btn num-btn" data-num="5">5</button>
+                    <button class="calc-btn num-btn" data-num="6">6</button>
+                    <button class="calc-btn op-btn" data-op="-">−</button>
+                    
+                    <button class="calc-btn num-btn" data-num="1">1</button>
+                    <button class="calc-btn num-btn" data-num="2">2</button>
+                    <button class="calc-btn num-btn" data-num="3">3</button>
+                    <button class="calc-btn op-btn" data-op="+">+</button>
+                    
+                    <button class="calc-btn num-btn zero-btn" data-num="0">0</button>
+                    <button class="calc-btn num-btn" data-num=".">.</button>
+                    <button class="calc-btn equals-btn" data-action="equals">=</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="script.js"></script>
