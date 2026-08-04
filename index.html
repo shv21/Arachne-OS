@@ -24,6 +24,11 @@
                 <p>Chrome</p>
             </div>
 
+            <div class="app vscode-app-btn" id="dockVscodeBtn">
+                <img src="./incons/2.jfif" alt="VS Code">
+                <p>VS Code</p>
+            </div>
+
             <div class="app">
                 <img src="./incons/3.jfif" alt="Files">
                 <p>Files</p>
@@ -52,7 +57,7 @@
                 <p>Chrome</p>
             </div>
     
-            <div class="app1">
+            <div class="app1 vscode-app-btn" id="vscodeAppBtn">
                 <img src="./incons/2.jfif" alt="VS Code">
                 <p>VS Code</p>
             </div>
@@ -162,6 +167,121 @@
             <!-- Chrome Viewport / Tab Content Container -->
             <div class="chrome-viewport" id="chromeViewport">
                 <!-- Tab views injected dynamically -->
+            </div>
+        <!-- VS Code Studio Window -->
+        <div class="window vscode-window hide" id="vscodeWindow">
+            <!-- Header Bar -->
+            <div class="vscode-header" id="vscodeHeader">
+                <div class="vscode-title">
+                    <span class="vscode-icon">💙</span> Arachne Code Studio - [<span id="vscodeCurrentFileName">index.js</span>]
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn minimize-btn" id="minVscodeBtn" title="Minimize">−</button>
+                    <button class="win-btn maximize-btn" id="maxVscodeBtn" title="Maximize">□</button>
+                    <button class="win-btn close-btn" id="closeVscodeBtn" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- VS Code Menu Bar -->
+            <div class="vscode-menu-bar">
+                <div class="menu-items">
+                    <span>File</span>
+                    <span>Edit</span>
+                    <span>Selection</span>
+                    <span>View</span>
+                    <span>Go</span>
+                    <span>Run</span>
+                    <span>Terminal</span>
+                    <span>Help</span>
+                </div>
+                <button class="run-code-btn" id="runCodeBtn" title="Execute Code (Ctrl + Enter)">
+                    <span class="run-icon">▶</span> Run Code
+                </button>
+            </div>
+
+            <!-- Main Workspace Container -->
+            <div class="vscode-workspace">
+                <!-- Activity Bar -->
+                <div class="vscode-activity-bar">
+                    <button class="activity-btn active" title="Explorer">📁</button>
+                    <button class="activity-btn" title="Search">🔍</button>
+                    <button class="activity-btn" title="Source Control">🌿</button>
+                    <button class="activity-btn" title="Run & Debug">▶️</button>
+                    <button class="activity-btn" title="Extensions">🧩</button>
+                    <div class="activity-spacer"></div>
+                    <button class="activity-btn" title="Settings">⚙️</button>
+                </div>
+
+                <!-- Explorer Sidebar -->
+                <div class="vscode-sidebar">
+                    <div class="sidebar-title">EXPLORER: ARACHNE-OS</div>
+                    <div class="file-tree" id="fileTree">
+                        <div class="tree-item file-item active" data-filename="script.js">
+                            <span class="file-icon">⚡</span> script.js
+                        </div>
+                        <div class="tree-item file-item" data-filename="index.html">
+                            <span class="file-icon">📄</span> index.html
+                        </div>
+                        <div class="tree-item file-item" data-filename="style.css">
+                            <span class="file-icon">🎨</span> style.css
+                        </div>
+                        <div class="tree-item file-item" data-filename="main.py">
+                            <span class="file-icon">🐍</span> main.py
+                        </div>
+                        <div class="tree-item file-item" data-filename="README.md">
+                            <span class="file-icon">📝</span> README.md
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editor & Terminal Area -->
+                <div class="vscode-editor-section">
+                    <!-- Tab Bar -->
+                    <div class="vscode-tab-bar">
+                        <div class="vscode-tabs-list" id="vscodeTabsList">
+                            <!-- Dynamic File Tabs injected by JS -->
+                        </div>
+                        <button class="add-code-tab-btn" id="addCodeTabBtn" title="New File">+</button>
+                    </div>
+
+                    <!-- Code Workspace -->
+                    <div class="vscode-editor-body">
+                        <div class="line-numbers" id="lineNumbers">1</div>
+                        <textarea class="code-editor" id="codeEditor" spellcheck="false" placeholder="// Write code here..."></textarea>
+                    </div>
+
+                    <!-- Integrated Terminal Panel -->
+                    <div class="vscode-terminal-panel" id="vscodeTerminalPanel">
+                        <div class="terminal-header">
+                            <div class="terminal-tabs">
+                                <span class="term-tab active">Terminal</span>
+                                <span class="term-tab">Output</span>
+                                <span class="term-tab">Problems</span>
+                            </div>
+                            <button class="term-action-btn" id="clearTerminalBtn" title="Clear Terminal">🗑️ Clear</button>
+                        </div>
+                        <div class="terminal-console" id="terminalConsole">
+                            <div class="term-line info">Arachne Cyber Terminal v2.5 [Node v24.12.0]</div>
+                            <div class="term-line success">Ready. Click "▶ Run Code" or type JavaScript to execute.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VS Code Status Bar -->
+            <div class="vscode-status-bar" id="vscodeStatusBar">
+                <div class="status-left">
+                    <span>🌿 main*</span>
+                    <span>🔄 0↓ 1↑</span>
+                    <span>⚠️ 0  🚫 0</span>
+                </div>
+                <div class="status-right">
+                    <span id="vscodeCursorPos">Ln 1, Col 1</span>
+                    <span>Spaces: 4</span>
+                    <span>UTF-8</span>
+                    <span id="vscodeLangMode">JavaScript</span>
+                    <span>🟢 Arachne Ready</span>
+                </div>
             </div>
         </div>
 

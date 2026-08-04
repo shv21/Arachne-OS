@@ -620,3 +620,327 @@ function updateNavControls(tabData) {
     chromeForwardBtn.disabled = tabData.historyIndex >= tabData.history.length - 1;
 }
 
+// -------------------------------------------------------------
+// VS Code Studio Application Module
+// -------------------------------------------------------------
+
+const vscodeWindow = document.getElementById("vscodeWindow");
+const vscodeHeader = document.getElementById("vscodeHeader");
+const closeVscodeBtn = document.getElementById("closeVscodeBtn");
+const minVscodeBtn = document.getElementById("minVscodeBtn");
+const maxVscodeBtn = document.getElementById("maxVscodeBtn");
+const vscodeAppBtns = document.querySelectorAll(".vscode-app-btn");
+
+const vscodeTabsList = document.getElementById("vscodeTabsList");
+const addCodeTabBtn = document.getElementById("addCodeTabBtn");
+const codeEditor = document.getElementById("codeEditor");
+const lineNumbers = document.getElementById("lineNumbers");
+const runCodeBtn = document.getElementById("runCodeBtn");
+const terminalConsole = document.getElementById("terminalConsole");
+const clearTerminalBtn = document.getElementById("clearTerminalBtn");
+const vscodeCurrentFileName = document.getElementById("vscodeCurrentFileName");
+const vscodeCursorPos = document.getElementById("vscodeCursorPos");
+const vscodeLangMode = document.getElementById("vscodeLangMode");
+const fileTreeItems = document.querySelectorAll(".file-item");
+
+// Default Project Code Files
+const projectFiles = {
+    "script.js": `// Arachne OS Cyber Script Engine
+console.log("🕸️ Initializing Arachne OS...");
+
+function calculateSpiderWeb(powerLevel) {
+    const webDensity = powerLevel * 42;
+    console.log("🕸️ Web Density calculated:", webDensity + " N/m²");
+    return webDensity;
+}
+
+const spiderPower = 100;
+calculateSpiderWeb(spiderPower);
+console.log("✨ Arachne OS Script execution complete!");`,
+
+    "index.html": `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arachne OS Cyber Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="cyber-container">
+        <h1>🕸️ Welcome to Arachne OS</h1>
+        <p>Cyber Spider Edition Web Environment</p>
+    </div>
+</body>
+</html>`,
+
+    "style.css": `/* Arachne OS Theme Styles */
+body {
+    background: #090c15;
+    color: #00ffff;
+    font-family: Arial, sans-serif;
+}
+
+.cyber-container {
+    padding: 30px;
+    border: 1px solid rgba(0, 225, 255, 0.4);
+    box-shadow: 0 0 25px rgba(0, 225, 255, 0.3);
+}`,
+
+    "main.py": `# Arachne OS Python Module
+print("🐍 Arachne Python Engine v3.12")
+
+def activate_spider_mode(agent_name):
+    print(f"🕸️ Activating Cyber Suit for {agent_name}...")
+    return True
+
+activate_spider_mode("Peter Parker")
+print("✅ Cyber Spider Suit Online!")`,
+
+    "README.md": `# Arachne OS - Cyber Spider Edition
+Welcome to **Arachne OS**!
+
+### Features:
+- 🌐 **Chrome Browser**: Multi-tab browsing engine with address bar & bookmarks.
+- 💙 **VS Code Studio**: Interactive code editor with live terminal code execution.
+- 🧮 **Arachne Calculator**: High-precision glassmorphic scientific calculator.
+- 🕷️ **Spider-Man Glassmorphism Theme**: Cyber cyan and neon pink aesthetic.
+`
+};
+
+let openVsCodeTabs = [];
+let activeVsCodeFile = null;
+
+// Open VS Code Application
+vscodeAppBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        vscodeWindow.classList.remove("hide");
+        appBox.classList.add("hide"); // Auto-close start menu
+        bringToFront(vscodeWindow);
+        if (openVsCodeTabs.length === 0) {
+            openVsCodeFile("script.js");
+        }
+    });
+});
+
+vscodeWindow.addEventListener("mousedown", () => {
+    bringToFront(vscodeWindow);
+});
+
+makeDraggable(vscodeWindow, vscodeHeader);
+
+// Window Controls
+closeVscodeBtn.addEventListener("click", () => {
+    vscodeWindow.classList.add("hide");
+});
+
+minVscodeBtn.addEventListener("click", () => {
+    vscodeWindow.classList.add("hide");
+});
+
+let isVsCodeMaximized = false;
+maxVscodeBtn.addEventListener("click", () => {
+    isVsCodeMaximized = !isVsCodeMaximized;
+    if (isVsCodeMaximized) {
+        vscodeWindow.classList.add("maximized");
+        maxVscodeBtn.textContent = "❐";
+    } else {
+        vscodeWindow.classList.remove("maximized");
+        maxVscodeBtn.textContent = "□";
+    }
+});
+
+// File Explorer Click Listeners
+fileTreeItems.forEach(item => {
+    item.addEventListener("click", () => {
+        const fileName = item.getAttribute("data-filename");
+        if (fileName) {
+            openVsCodeFile(fileName);
+        }
+    });
+});
+
+function openVsCodeFile(fileName) {
+    let tabData = openVsCodeTabs.find(t => t.name === fileName);
+    
+    if (!tabData) {
+        let content = projectFiles[fileName] || `// New file: ${fileName}\n`;
+        let icon = fileName.endsWith(".html") ? "📄" : fileName.endsWith(".css") ? "🎨" : fileName.endsWith(".py") ? "🐍" : fileName.endsWith(".md") ? "📝" : "⚡";
+        
+        tabData = {
+            name: fileName,
+            icon: icon,
+            content: content
+        };
+        
+        openVsCodeTabs.push(tabData);
+        renderVsCodeTabButton(tabData);
+    }
+    
+    switchToVsCodeFile(fileName);
+}
+
+function renderVsCodeTabButton(tabData) {
+    const tabEl = document.createElement("div");
+    tabEl.className = "vscode-tab";
+    tabEl.id = `vstab-${tabData.name.replace(".", "-")}`;
+    tabEl.innerHTML = `
+        <span class="file-icon">${tabData.icon}</span>
+        <span class="tab-name">${tabData.name}</span>
+        <button class="tab-close-btn" title="Close file">✕</button>
+    `;
+
+    tabEl.addEventListener("click", (e) => {
+        if (e.target.classList.contains("tab-close-btn")) {
+            e.stopPropagation();
+            closeVsCodeTab(tabData.name);
+        } else {
+            switchToVsCodeFile(tabData.name);
+        }
+    });
+
+    vscodeTabsList.appendChild(tabEl);
+}
+
+function switchToVsCodeFile(fileName) {
+    if (activeVsCodeFile && codeEditor) {
+        // Save current changes into active file cache
+        const currentTab = openVsCodeTabs.find(t => t.name === activeVsCodeFile);
+        if (currentTab) {
+            currentTab.content = codeEditor.value;
+        }
+    }
+
+    activeVsCodeFile = fileName;
+    const tabData = openVsCodeTabs.find(t => t.name === fileName);
+    if (!tabData) return;
+
+    // Update active tab buttons
+    document.querySelectorAll(".vscode-tab").forEach(el => el.classList.remove("active"));
+    const activeTabEl = document.getElementById(`vstab-${fileName.replace(".", "-")}`);
+    if (activeTabEl) activeTabEl.classList.add("active");
+
+    // Update Explorer sidebar active state
+    fileTreeItems.forEach(item => {
+        if (item.getAttribute("data-filename") === fileName) {
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
+        }
+    });
+
+    // Update Code Editor Content
+    codeEditor.value = tabData.content;
+    vscodeCurrentFileName.textContent = fileName;
+    
+    // Update Language Mode
+    const lang = fileName.endsWith(".html") ? "HTML" : fileName.endsWith(".css") ? "CSS" : fileName.endsWith(".py") ? "Python" : fileName.endsWith(".md") ? "Markdown" : "JavaScript";
+    vscodeLangMode.textContent = lang;
+
+    updateLineNumbers();
+    updateCursorPosition();
+}
+
+function closeVsCodeTab(fileName) {
+    const index = openVsCodeTabs.findIndex(t => t.name === fileName);
+    if (index === -1) return;
+
+    const tabEl = document.getElementById(`vstab-${fileName.replace(".", "-")}`);
+    if (tabEl) tabEl.remove();
+
+    openVsCodeTabs.splice(index, 1);
+
+    if (openVsCodeTabs.length === 0) {
+        activeVsCodeFile = null;
+        codeEditor.value = "";
+        vscodeCurrentFileName.textContent = "Untitled";
+        updateLineNumbers();
+    } else {
+        const nextTab = openVsCodeTabs[Math.max(0, index - 1)];
+        switchToVsCodeFile(nextTab.name);
+    }
+}
+
+addCodeTabBtn.addEventListener("click", () => {
+    const newName = `file${openVsCodeTabs.length + 1}.js`;
+    openVsCodeFile(newName);
+});
+
+// Line Numbers Calculation & Sync
+function updateLineNumbers() {
+    const lines = codeEditor.value.split("\n").length;
+    lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join("<br>");
+}
+
+codeEditor.addEventListener("input", () => {
+    if (activeVsCodeFile) {
+        const tabData = openVsCodeTabs.find(t => t.name === activeVsCodeFile);
+        if (tabData) tabData.content = codeEditor.value;
+    }
+    updateLineNumbers();
+});
+
+codeEditor.addEventListener("scroll", () => {
+    lineNumbers.scrollTop = codeEditor.scrollTop;
+});
+
+function updateCursorPosition() {
+    const pos = codeEditor.selectionStart;
+    const textBefore = codeEditor.value.substring(0, pos);
+    const lines = textBefore.split("\n");
+    const currentLine = lines.length;
+    const currentCol = lines[lines.length - 1].length + 1;
+    vscodeCursorPos.textContent = `Ln ${currentLine}, Col ${currentCol}`;
+}
+
+codeEditor.addEventListener("keyup", updateCursorPosition);
+codeEditor.addEventListener("click", updateCursorPosition);
+
+// Code Execution Terminal Engine
+runCodeBtn.addEventListener("click", runCode);
+
+function runCode() {
+    if (!codeEditor.value.trim()) return;
+
+    appendTerminalLine(`▶ Executing ${activeVsCodeFile || "Script"}...`, "info");
+
+    const code = codeEditor.value;
+
+    try {
+        // Intercept console output
+        let outputs = [];
+        const customConsole = {
+            log: (...args) => outputs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(" ")),
+            error: (...args) => outputs.push("❌ Error: " + args.join(" ")),
+            warn: (...args) => outputs.push("⚠️ Warning: " + args.join(" "))
+        };
+
+        // Safe evaluation scope
+        const runFn = new Function("console", code);
+        runFn(customConsole);
+
+        if (outputs.length > 0) {
+            outputs.forEach(msg => appendTerminalLine(msg, msg.startsWith("❌") ? "error" : "success"));
+        } else {
+            appendTerminalLine("✓ Code executed with no console output.", "success");
+        }
+    } catch (err) {
+        appendTerminalLine(`❌ Runtime Exception: ${err.message}`, "error");
+    }
+}
+
+function appendTerminalLine(text, type = "info") {
+    const lineEl = document.createElement("div");
+    lineEl.className = `term-line ${type}`;
+    lineEl.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    terminalConsole.appendChild(lineEl);
+    terminalConsole.scrollTop = terminalConsole.scrollHeight;
+}
+
+clearTerminalBtn.addEventListener("click", () => {
+    terminalConsole.innerHTML = `
+        <div class="term-line info">Arachne Cyber Terminal v2.5 [Node v24.12.0]</div>
+        <div class="term-line success">Terminal cleared.</div>
+    `;
+});
+
+
