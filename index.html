@@ -1,43 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arachne-OS</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="descktop-lockScreen ">
         <div class="overlay">
             <!-- <h1>hii dude</h1> -->
         </div>
-         <button class="login-btn">Unlock OS</button>
+        <button class="login-btn">Unlock OS</button>
     </div>
 
     <div class="descktop-main-screen hide">
 
-        <!-- Desktop Shortcuts -->
-        <div class="desktop-shortcuts">
-            <div class="desktop-icon chrome-app-btn" title="Chrome Browser">
-                <img src="./incons/1.jfif" alt="Chrome">
-                <p>Chrome</p>
-            </div>
-            <div class="desktop-icon vscode-app-btn" title="VS Code Studio">
-                <img src="./incons/2.jfif" alt="VS Code">
-                <p>VS Code</p>
-            </div>
-            <div class="desktop-icon files-app-btn" title="File Explorer">
-                <img src="./incons/3.jfif" alt="Files">
-                <p>Files</p>
-            </div>
-            <div class="desktop-icon calc-app-btn" title="Calculator">
-                <img src="./incons/4.jfif" alt="Calculator">
-                <p>Calculator</p>
-            </div>
-        </div>
-
-        <div class ="sidebar">
+        <div class="sidebar">
 
             <div class="app chrome-app-btn" id="dockChromeBtn">
                 <img src="./incons/1.jfif" alt="Chrome">
@@ -58,8 +40,8 @@
                 <img src="./incons/5.jfif" alt="Settings">
                 <p>Settings</p>
             </div>
-            
-            
+
+
             <!-- Start Button -->
             <div class="start">
                 <div class="app">
@@ -67,16 +49,16 @@
                     <p>Start</p>
                 </div>
             </div>
-            
+
         </div>
 
         <div class="appBox hide">
-            
+
             <div class="app1 chrome-app-btn" id="chromeAppBtn">
                 <img src="./incons/1.jfif" alt="Chrome">
                 <p>Chrome</p>
             </div>
-    
+
             <div class="app1 vscode-app-btn" id="vscodeAppBtn">
                 <img src="./incons/2.jfif" alt="VS Code">
                 <p>VS Code</p>
@@ -91,7 +73,7 @@
                 <img src="./incons/4.jfif" alt="Calculator">
                 <p>Calculator</p>
             </div>
-           
+
 
         </div>
 
@@ -116,22 +98,22 @@
                     <button class="calc-btn action-btn" data-action="toggle-sign">±</button>
                     <button class="calc-btn action-btn" data-action="percent">%</button>
                     <button class="calc-btn op-btn" data-op="/">÷</button>
-                    
+
                     <button class="calc-btn num-btn" data-num="7">7</button>
                     <button class="calc-btn num-btn" data-num="8">8</button>
                     <button class="calc-btn num-btn" data-num="9">9</button>
                     <button class="calc-btn op-btn" data-op="*">×</button>
-                    
+
                     <button class="calc-btn num-btn" data-num="4">4</button>
                     <button class="calc-btn num-btn" data-num="5">5</button>
                     <button class="calc-btn num-btn" data-num="6">6</button>
                     <button class="calc-btn op-btn" data-op="-">−</button>
-                    
+
                     <button class="calc-btn num-btn" data-num="1">1</button>
                     <button class="calc-btn num-btn" data-num="2">2</button>
                     <button class="calc-btn num-btn" data-num="3">3</button>
                     <button class="calc-btn op-btn" data-op="+">+</button>
-                    
+
                     <button class="calc-btn num-btn zero-btn" data-num="0">0</button>
                     <button class="calc-btn num-btn" data-num=".">.</button>
                     <button class="calc-btn equals-btn" data-action="equals">=</button>
@@ -168,8 +150,10 @@
                 <form class="chrome-url-form" id="chromeUrlForm">
                     <div class="url-bar-container">
                         <span class="url-security-icon" id="urlSecurityIcon">🔒</span>
-                        <input type="text" class="chrome-url-input" id="chromeUrlInput" placeholder="Search Google or type a URL" autocomplete="off">
-                        <button type="button" class="chrome-bookmark-btn" id="chromeBookmarkBtn" title="Bookmark this page">⭐</button>
+                        <input type="text" class="chrome-url-input" id="chromeUrlInput"
+                            placeholder="Search Google or type a URL" autocomplete="off">
+                        <button type="button" class="chrome-bookmark-btn" id="chromeBookmarkBtn"
+                            title="Bookmark this page">⭐</button>
                     </div>
                 </form>
 
@@ -182,11 +166,16 @@
 
             <!-- Bookmarks Bar -->
             <div class="chrome-bookmarks-bar">
-                <button class="bookmark-chip" data-url="https://google.com"><span class="chip-icon">🔍</span> Google</button>
-                <button class="bookmark-chip" data-url="https://wikipedia.org"><span class="chip-icon">🌐</span> Wikipedia</button>
-                <button class="bookmark-chip" data-url="https://github.com"><span class="chip-icon">🐙</span> GitHub</button>
-                <button class="bookmark-chip" data-url="https://news.ycombinator.com"><span class="chip-icon">⚡</span> Hacker News</button>
-                <button class="bookmark-chip" data-url="arachne://portal"><span class="chip-icon">🕸️</span> Arachne Web</button>
+                <button class="bookmark-chip" data-url="https://google.com"><span class="chip-icon">🔍</span>
+                    Google</button>
+                <button class="bookmark-chip" data-url="https://wikipedia.org"><span class="chip-icon">🌐</span>
+                    Wikipedia</button>
+                <button class="bookmark-chip" data-url="https://github.com"><span class="chip-icon">🐙</span>
+                    GitHub</button>
+                <button class="bookmark-chip" data-url="https://news.ycombinator.com"><span class="chip-icon">⚡</span>
+                    Hacker News</button>
+                <button class="bookmark-chip" data-url="arachne://portal"><span class="chip-icon">🕸️</span> Arachne
+                    Web</button>
             </div>
 
             <!-- Chrome Viewport / Tab Content Container -->
@@ -200,7 +189,8 @@
             <!-- Header Bar -->
             <div class="vscode-header" id="vscodeHeader">
                 <div class="vscode-title">
-                    <span class="vscode-icon">💙</span> Arachne Code Studio - [<span id="vscodeCurrentFileName">index.js</span>]
+                    <span class="vscode-icon">💙</span> Arachne Code Studio - [<span
+                        id="vscodeCurrentFileName">index.js</span>]
                 </div>
                 <div class="window-controls">
                     <button class="win-btn minimize-btn" id="minVscodeBtn" title="Minimize">−</button>
@@ -274,7 +264,8 @@
                     <!-- Code Workspace -->
                     <div class="vscode-editor-body">
                         <div class="line-numbers" id="lineNumbers">1</div>
-                        <textarea class="code-editor" id="codeEditor" spellcheck="false" placeholder="// Write code here..."></textarea>
+                        <textarea class="code-editor" id="codeEditor" spellcheck="false"
+                            placeholder="// Write code here..."></textarea>
                     </div>
 
                     <!-- Integrated Terminal Panel -->
@@ -285,11 +276,13 @@
                                 <span class="term-tab">Output</span>
                                 <span class="term-tab">Problems</span>
                             </div>
-                            <button class="term-action-btn" id="clearTerminalBtn" title="Clear Terminal">🗑️ Clear</button>
+                            <button class="term-action-btn" id="clearTerminalBtn" title="Clear Terminal">🗑️
+                                Clear</button>
                         </div>
                         <div class="terminal-console" id="terminalConsole">
                             <div class="term-line info">Arachne Cyber Terminal v2.5 [Node v24.12.0]</div>
-                            <div class="term-line success">Ready. Click "▶ Run Code" or type JavaScript to execute.</div>
+                            <div class="term-line success">Ready. Click "▶ Run Code" or type JavaScript to execute.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -300,7 +293,7 @@
                 <div class="status-left">
                     <span>🌿 main*</span>
                     <span>🔄 0↓ 1↑</span>
-                    <span>⚠️ 0  🚫 0</span>
+                    <span>⚠️ 0 🚫 0</span>
                 </div>
                 <div class="status-right">
                     <span id="vscodeCursorPos">Ln 1, Col 1</span>
@@ -337,7 +330,8 @@
 
                 <div class="files-path-bar">
                     <span class="path-icon">🖥️</span>
-                    <input type="text" class="files-path-input" id="filesPathInput" value="Cyber Storage (C:) > Desktop > Projects" readonly>
+                    <input type="text" class="files-path-input" id="filesPathInput"
+                        value="Cyber Storage (C:) > Desktop > Projects" readonly>
                 </div>
 
                 <div class="files-search-box">
@@ -399,7 +393,9 @@
                 <div class="status-right">
                     <div class="storage-indicator">
                         <span>💾 Storage: 240 GB free of 512 GB</span>
-                        <div class="storage-bar"><div class="storage-fill" style="width: 53%;"></div></div>
+                        <div class="storage-bar">
+                            <div class="storage-fill" style="width: 53%;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -410,4 +406,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>
