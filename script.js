@@ -37,10 +37,14 @@ startBtn.addEventListener("click", () => {
 });
 
 // Calculator Launcher Events
-calcAppBtn.addEventListener("click", () => {
-    calcWindow.classList.remove("hide");
-    appBox.classList.add("hide"); // Auto-close start menu when app launches
-    bringToFront(calcWindow);
+const calcAppBtns = document.querySelectorAll(".calc-app-btn");
+calcAppBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        calcWindow.classList.remove("hide");
+        appBox.classList.add("hide"); // Auto-close start menu when app launches
+        bringToFront(calcWindow);
+    });
 });
 
 closeCalcBtn.addEventListener("click", () => {
@@ -273,7 +277,8 @@ let tabIdCounter = 0;
 
 // Open Chrome Window
 chromeAppBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         chromeWindow.classList.remove("hide");
         appBox.classList.add("hide"); // Close start menu on launch
         bringToFront(chromeWindow);
@@ -712,7 +717,8 @@ let activeVsCodeFile = null;
 
 // Open VS Code Application
 vscodeAppBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         vscodeWindow.classList.remove("hide");
         appBox.classList.add("hide"); // Auto-close start menu
         bringToFront(vscodeWindow);
@@ -1033,7 +1039,8 @@ let isListView = false;
 
 // Open File Explorer Application
 filesAppBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         filesWindow.classList.remove("hide");
         appBox.classList.add("hide"); // Auto-close start menu
         bringToFront(filesWindow);

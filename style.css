@@ -47,13 +47,63 @@ body {
   display: none;
 }
 
-/* Desktop Icons */
+/* Desktop Icons & Shortcuts */
+
+.desktop-shortcuts {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  z-index: 50;
+}
+
+.desktop-icon {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.desktop-icon img {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.desktop-icon p {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.desktop-icon:hover {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(5px);
+  transform: scale(1.1);
+}
+
+.desktop-icon:hover img {
+  box-shadow: 0 0 30px #00ffff;
+  transform: rotate(-6deg);
+}
 
 .sidebar {
   position: absolute;
   bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 10000;
 
   display: flex;
   flex-direction: row;
@@ -133,6 +183,7 @@ body {
   justify-content: start;
   justify-self: center;
   gap: 25px;
+  z-index: 10001;
 
   padding: 15px 30px;
 
