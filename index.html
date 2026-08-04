@@ -19,7 +19,12 @@
 
         <div class ="sidebar">
 
-              <div class="app">
+            <div class="app chrome-app-btn" id="dockChromeBtn">
+                <img src="./incons/1.jfif" alt="Chrome">
+                <p>Chrome</p>
+            </div>
+
+            <div class="app">
                 <img src="./incons/3.jfif" alt="Files">
                 <p>Files</p>
             </div>
@@ -42,7 +47,7 @@
 
         <div class="appBox hide">
             
-            <div class="app1">
+            <div class="app1 chrome-app-btn" id="chromeAppBtn">
                 <img src="./incons/1.jfif" alt="Chrome">
                 <p>Chrome</p>
             </div>
@@ -101,6 +106,62 @@
                     <button class="calc-btn num-btn" data-num=".">.</button>
                     <button class="calc-btn equals-btn" data-action="equals">=</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Chrome Browser Window -->
+        <div class="window chrome-window hide" id="chromeWindow">
+            <!-- Chrome Header & Tab Bar -->
+            <div class="chrome-header" id="chromeHeader">
+                <div class="chrome-tabs-bar" id="chromeTabsBar">
+                    <div class="tabs-list" id="tabsList">
+                        <!-- Dynamic Tab items inserted by script.js -->
+                    </div>
+                    <button class="add-tab-btn" id="addTabBtn" title="New Tab">+</button>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn minimize-btn" id="minChromeBtn" title="Minimize">−</button>
+                    <button class="win-btn maximize-btn" id="maxChromeBtn" title="Maximize">□</button>
+                    <button class="win-btn close-btn" id="closeChromeBtn" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- Chrome Toolbar Navigation & Address Bar -->
+            <div class="chrome-toolbar">
+                <div class="nav-controls">
+                    <button class="chrome-nav-btn" id="chromeBackBtn" title="Back">←</button>
+                    <button class="chrome-nav-btn" id="chromeForwardBtn" title="Forward">→</button>
+                    <button class="chrome-nav-btn" id="chromeReloadBtn" title="Reload">↻</button>
+                    <button class="chrome-nav-btn" id="chromeHomeBtn" title="Home">🏠</button>
+                </div>
+
+                <form class="chrome-url-form" id="chromeUrlForm">
+                    <div class="url-bar-container">
+                        <span class="url-security-icon" id="urlSecurityIcon">🔒</span>
+                        <input type="text" class="chrome-url-input" id="chromeUrlInput" placeholder="Search Google or type a URL" autocomplete="off">
+                        <button type="button" class="chrome-bookmark-btn" id="chromeBookmarkBtn" title="Bookmark this page">⭐</button>
+                    </div>
+                </form>
+
+                <div class="chrome-actions">
+                    <button class="chrome-action-btn" title="Extensions">🧩</button>
+                    <button class="chrome-action-btn" title="Profile">🕸️</button>
+                    <button class="chrome-action-btn" title="Menu">⋮</button>
+                </div>
+            </div>
+
+            <!-- Bookmarks Bar -->
+            <div class="chrome-bookmarks-bar">
+                <button class="bookmark-chip" data-url="https://google.com"><span class="chip-icon">🔍</span> Google</button>
+                <button class="bookmark-chip" data-url="https://wikipedia.org"><span class="chip-icon">🌐</span> Wikipedia</button>
+                <button class="bookmark-chip" data-url="https://github.com"><span class="chip-icon">🐙</span> GitHub</button>
+                <button class="bookmark-chip" data-url="https://news.ycombinator.com"><span class="chip-icon">⚡</span> Hacker News</button>
+                <button class="bookmark-chip" data-url="arachne://portal"><span class="chip-icon">🕸️</span> Arachne Web</button>
+            </div>
+
+            <!-- Chrome Viewport / Tab Content Container -->
+            <div class="chrome-viewport" id="chromeViewport">
+                <!-- Tab views injected dynamically -->
             </div>
         </div>
 
