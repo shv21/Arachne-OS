@@ -943,4 +943,306 @@ clearTerminalBtn.addEventListener("click", () => {
     `;
 });
 
+// -------------------------------------------------------------
+// File Explorer Application Module
+// -------------------------------------------------------------
+
+const filesWindow = document.getElementById("filesWindow");
+const filesHeader = document.getElementById("filesHeader");
+const closeFilesBtn = document.getElementById("closeFilesBtn");
+const minFilesBtn = document.getElementById("minFilesBtn");
+const maxFilesBtn = document.getElementById("maxFilesBtn");
+const filesAppBtns = document.querySelectorAll(".files-app-btn");
+
+const filesPathInput = document.getElementById("filesPathInput");
+const filesSearchInput = document.getElementById("filesSearchInput");
+const filesGrid = document.getElementById("filesGrid");
+const gridViewBtn = document.getElementById("gridViewBtn");
+const listViewBtn = document.getElementById("listViewBtn");
+const newFolderBtn = document.getElementById("newFolderBtn");
+
+const filesBackBtn = document.getElementById("filesBackBtn");
+const filesForwardBtn = document.getElementById("filesForwardBtn");
+const filesUpBtn = document.getElementById("filesUpBtn");
+const filesRefreshBtn = document.getElementById("filesRefreshBtn");
+const filesSidebarItems = document.querySelectorAll(".files-sidebar .sidebar-item");
+
+const filesItemCount = document.getElementById("filesItemCount");
+const filesSelectionCount = document.getElementById("filesSelectionCount");
+
+// Virtual File System Database
+const virtualFS = {
+    "Desktop": [
+        { name: "Projects", isFolder: true, icon: "📁", meta: "Folder" },
+        { name: "wallpapers", isFolder: true, icon: "📁", meta: "Folder" },
+        { name: "index.html", isFolder: false, icon: "📄", meta: "4.3 KB" },
+        { name: "style.css", isFolder: false, icon: "🎨", meta: "19.4 KB" },
+        { name: "script.js", isFolder: false, icon: "⚡", meta: "31.9 KB" },
+        { name: "main.py", isFolder: false, icon: "🐍", meta: "1.2 KB" },
+        { name: "README.md", isFolder: false, icon: "📝", meta: "2.8 KB" },
+        { name: "spider-icon.png", isFolder: false, icon: "🖼️", meta: "152 KB" }
+    ],
+    "Documents": [
+        { name: "Spider-Notes.txt", isFolder: false, icon: "📝", meta: "3.2 KB" },
+        { name: "Project-Plan.pdf", isFolder: false, icon: "📕", meta: "1.4 MB" },
+        { name: "System-Report.docx", isFolder: false, icon: "📘", meta: "840 KB" },
+        { name: "Arachne-API.json", isFolder: false, icon: "⚙️", meta: "18.5 KB" }
+    ],
+    "Downloads": [
+        { name: "cyber-beat.mp3", isFolder: false, icon: "🎵", meta: "4.8 MB" },
+        { name: "ArachneOS-v2.5.zip", isFolder: false, icon: "📦", meta: "42.1 MB" },
+        { name: "spider-wallpaper.png", isFolder: false, icon: "🖼️", meta: "3.7 MB" },
+        { name: "Setup.exe", isFolder: false, icon: "💿", meta: "12.0 MB" }
+    ],
+    "Pictures": [
+        { name: "spider-man-across.png", isFolder: false, icon: "🖼️", meta: "1.9 MB" },
+        { name: "spider-man-logo.png", isFolder: false, icon: "🖼️", meta: "374 KB" },
+        { name: "avatar-spider.png", isFolder: false, icon: "🖼️", meta: "520 KB" },
+        { name: "neon-city.jpg", isFolder: false, icon: "🖼️", meta: "2.4 MB" }
+    ],
+    "Music": [
+        { name: "synthwave-drive.mp3", isFolder: false, icon: "🎵", meta: "5.2 MB" },
+        { name: "cyber-spider-theme.wav", isFolder: false, icon: "🎵", meta: "14.8 MB" },
+        { name: "neon-nights.flac", isFolder: false, icon: "🎵", meta: "28.1 MB" }
+    ],
+    "Videos": [
+        { name: "arachne-os-demo.mp4", isFolder: false, icon: "📽️", meta: "48.2 MB" },
+        { name: "spider-man-trailer.mkv", isFolder: false, icon: "📽️", meta: "120 MB" }
+    ],
+    "Projects": [
+        { name: "Arachne-OS", isFolder: true, icon: "🕸️", meta: "Folder" },
+        { name: "Ask-Gemini-App", isFolder: true, icon: "🤖", meta: "Folder" },
+        { name: "Spider-Web-Bot", isFolder: true, icon: "🕷️", meta: "Folder" }
+    ],
+    "Cyber Storage (C:)": [
+        { name: "Desktop", isFolder: true, icon: "🖥️", meta: "Folder" },
+        { name: "Documents", isFolder: true, icon: "📁", meta: "Folder" },
+        { name: "Downloads", isFolder: true, icon: "⬇️", meta: "Folder" },
+        { name: "Pictures", isFolder: true, icon: "🖼️", meta: "Folder" },
+        { name: "Music", isFolder: true, icon: "🎵", meta: "Folder" },
+        { name: "Videos", isFolder: true, icon: "📽️", meta: "Folder" }
+    ]
+};
+
+// Navigation History State
+let currentFolderPath = "Desktop";
+let filesHistory = ["Desktop"];
+let filesHistoryIndex = 0;
+let selectedFileNames = new Set();
+let isListView = false;
+
+// Open File Explorer Application
+filesAppBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        filesWindow.classList.remove("hide");
+        appBox.classList.add("hide"); // Auto-close start menu
+        bringToFront(filesWindow);
+        renderCurrentFolder();
+    });
+});
+
+filesWindow.addEventListener("mousedown", () => {
+    bringToFront(filesWindow);
+});
+
+makeDraggable(filesWindow, filesHeader);
+
+// Window Controls
+closeFilesBtn.addEventListener("click", () => {
+    filesWindow.classList.add("hide");
+});
+
+minFilesBtn.addEventListener("click", () => {
+    filesWindow.classList.add("hide");
+});
+
+let isFilesMaximized = false;
+maxFilesBtn.addEventListener("click", () => {
+    isFilesMaximized = !isFilesMaximized;
+    if (isFilesMaximized) {
+        filesWindow.classList.add("maximized");
+        maxFilesBtn.textContent = "❐";
+    } else {
+        filesWindow.classList.remove("maximized");
+        maxFilesBtn.textContent = "□";
+    }
+});
+
+// Sidebar Quick Access Click Handling
+filesSidebarItems.forEach(item => {
+    item.addEventListener("click", () => {
+        const targetPath = item.getAttribute("data-path");
+        if (targetPath) {
+            navigateToFolder(targetPath);
+        }
+    });
+});
+
+function navigateToFolder(folderName) {
+    if (!virtualFS[folderName] && folderName !== "Cyber Storage (C:)") {
+        // Create dynamic subfolder if not existing
+        virtualFS[folderName] = [
+            { name: "README.txt", isFolder: false, icon: "📝", meta: "1.0 KB" }
+        ];
+    }
+
+    currentFolderPath = folderName;
+    filesHistory.push(folderName);
+    filesHistoryIndex = filesHistory.length - 1;
+    selectedFileNames.clear();
+
+    renderCurrentFolder();
+}
+
+function renderCurrentFolder(searchQuery = "") {
+    filesPathInput.value = `Cyber Storage (C:) > ${currentFolderPath}`;
+
+    // Update Sidebar Active state
+    filesSidebarItems.forEach(item => {
+        if (item.getAttribute("data-path") === currentFolderPath) {
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
+        }
+    });
+
+    let items = virtualFS[currentFolderPath] || [];
+
+    if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        items = items.filter(i => i.name.toLowerCase().includes(q));
+    }
+
+    filesGrid.innerHTML = "";
+    if (isListView) {
+        filesGrid.classList.add("list-mode");
+    } else {
+        filesGrid.classList.remove("list-mode");
+    }
+
+    items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "file-card";
+        if (selectedFileNames.has(item.name)) card.classList.add("selected");
+
+        card.innerHTML = `
+            <div class="card-icon">${item.icon}</div>
+            <div class="card-name" title="${item.name}">${item.name}</div>
+            <div class="card-meta">${item.meta}</div>
+        `;
+
+        // Single click select
+        card.addEventListener("click", (e) => {
+            if (!e.ctrlKey) {
+                selectedFileNames.clear();
+                document.querySelectorAll(".file-card").forEach(c => c.classList.remove("selected"));
+            }
+            selectedFileNames.add(item.name);
+            card.classList.add("selected");
+            updateFilesStatusBar(items.length);
+        });
+
+        // Double click navigate / open
+        card.addEventListener("dblclick", () => {
+            if (item.isFolder) {
+                navigateToFolder(item.name);
+            } else {
+                openFilePreview(item);
+            }
+        });
+
+        filesGrid.appendChild(card);
+    });
+
+    updateFilesNavButtons();
+    updateFilesStatusBar(items.length);
+}
+
+function openFilePreview(item) {
+    if (item.name.endsWith(".html") || item.name.endsWith(".js") || item.name.endsWith(".css") || item.name.endsWith(".py")) {
+        // Open in VS Code
+        vscodeWindow.classList.remove("hide");
+        bringToFront(vscodeWindow);
+        openVsCodeFile(item.name);
+    } else {
+        alert(`📄 Opening file "${item.name}" (${item.meta}) in Arachne OS Viewer...`);
+    }
+}
+
+// Search Filter
+filesSearchInput.addEventListener("input", (e) => {
+    renderCurrentFolder(e.target.value);
+});
+
+// View Toggles
+gridViewBtn.addEventListener("click", () => {
+    isListView = false;
+    gridViewBtn.classList.add("active");
+    listViewBtn.classList.remove("active");
+    renderCurrentFolder(filesSearchInput.value);
+});
+
+listViewBtn.addEventListener("click", () => {
+    isListView = true;
+    listViewBtn.classList.add("active");
+    gridViewBtn.classList.remove("active");
+    renderCurrentFolder(filesSearchInput.value);
+});
+
+newFolderBtn.addEventListener("click", () => {
+    const folderName = prompt("Enter new folder name:", "New Folder");
+    if (folderName) {
+        if (!virtualFS[currentFolderPath]) virtualFS[currentFolderPath] = [];
+        virtualFS[currentFolderPath].push({
+            name: folderName,
+            isFolder: true,
+            icon: "📁",
+            meta: "Folder"
+        });
+        virtualFS[folderName] = [];
+        renderCurrentFolder();
+    }
+});
+
+// Navigation Toolbar Listeners
+filesBackBtn.addEventListener("click", () => {
+    if (filesHistoryIndex > 0) {
+        filesHistoryIndex--;
+        currentFolderPath = filesHistory[filesHistoryIndex];
+        selectedFileNames.clear();
+        renderCurrentFolder();
+    }
+});
+
+filesForwardBtn.addEventListener("click", () => {
+    if (filesHistoryIndex < filesHistory.length - 1) {
+        filesHistoryIndex++;
+        currentFolderPath = filesHistory[filesHistoryIndex];
+        selectedFileNames.clear();
+        renderCurrentFolder();
+    }
+});
+
+filesUpBtn.addEventListener("click", () => {
+    if (currentFolderPath !== "Cyber Storage (C:)") {
+        navigateToFolder("Cyber Storage (C:)");
+    }
+});
+
+filesRefreshBtn.addEventListener("click", () => {
+    renderCurrentFolder(filesSearchInput.value);
+});
+
+function updateFilesNavButtons() {
+    filesBackBtn.disabled = filesHistoryIndex <= 0;
+    filesForwardBtn.disabled = filesHistoryIndex >= filesHistory.length - 1;
+    filesUpBtn.disabled = currentFolderPath === "Cyber Storage (C:)";
+}
+
+function updateFilesStatusBar(totalItems) {
+    filesItemCount.textContent = `${totalItems} Items`;
+    filesSelectionCount.textContent = `${selectedFileNames.size} selected`;
+}
+
+
 

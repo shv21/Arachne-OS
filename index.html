@@ -29,7 +29,7 @@
                 <p>VS Code</p>
             </div>
 
-            <div class="app">
+            <div class="app files-app-btn" id="dockFilesBtn">
                 <img src="./incons/3.jfif" alt="Files">
                 <p>Files</p>
             </div>
@@ -60,6 +60,11 @@
             <div class="app1 vscode-app-btn" id="vscodeAppBtn">
                 <img src="./incons/2.jfif" alt="VS Code">
                 <p>VS Code</p>
+            </div>
+
+            <div class="app1 files-app-btn" id="filesAppBtn">
+                <img src="./incons/3.jfif" alt="Files">
+                <p>Files</p>
             </div>
 
             <div class="app1 calc-app-btn" id="calcAppBtn">
@@ -283,6 +288,99 @@
                     <span>UTF-8</span>
                     <span id="vscodeLangMode">JavaScript</span>
                     <span>🟢 Arachne Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Explorer Window -->
+        <div class="window files-window hide" id="filesWindow">
+            <!-- Header Bar -->
+            <div class="files-header" id="filesHeader">
+                <div class="files-title">
+                    <span class="files-icon">📁</span> Arachne File Explorer
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn minimize-btn" id="minFilesBtn" title="Minimize">−</button>
+                    <button class="win-btn maximize-btn" id="maxFilesBtn" title="Maximize">□</button>
+                    <button class="win-btn close-btn" id="closeFilesBtn" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- Toolbar & Path Bar -->
+            <div class="files-toolbar">
+                <div class="nav-controls">
+                    <button class="files-nav-btn" id="filesBackBtn" title="Back">←</button>
+                    <button class="files-nav-btn" id="filesForwardBtn" title="Forward">→</button>
+                    <button class="files-nav-btn" id="filesUpBtn" title="Up to Parent Folder">⬆</button>
+                    <button class="files-nav-btn" id="filesRefreshBtn" title="Refresh">↻</button>
+                </div>
+
+                <div class="files-path-bar">
+                    <span class="path-icon">🖥️</span>
+                    <input type="text" class="files-path-input" id="filesPathInput" value="Cyber Storage (C:) > Desktop > Projects" readonly>
+                </div>
+
+                <div class="files-search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="files-search-input" id="filesSearchInput" placeholder="Search files...">
+                </div>
+
+                <div class="files-actions">
+                    <button class="files-view-btn active" id="gridViewBtn" title="Grid View">🧊</button>
+                    <button class="files-view-btn" id="listViewBtn" title="List View">📜</button>
+                    <button class="files-action-btn" id="newFolderBtn" title="New Folder">+ Folder</button>
+                </div>
+            </div>
+
+            <!-- Main File Workspace -->
+            <div class="files-workspace">
+                <!-- Quick Access Sidebar -->
+                <div class="files-sidebar">
+                    <div class="sidebar-group-title">QUICK ACCESS</div>
+                    <div class="sidebar-item active" data-path="Desktop">
+                        <span class="sb-icon">🖥️</span> Desktop
+                    </div>
+                    <div class="sidebar-item" data-path="Documents">
+                        <span class="sb-icon">📁</span> Documents
+                    </div>
+                    <div class="sidebar-item" data-path="Downloads">
+                        <span class="sb-icon">⬇️</span> Downloads
+                    </div>
+                    <div class="sidebar-item" data-path="Pictures">
+                        <span class="sb-icon">🖼️</span> Pictures
+                    </div>
+                    <div class="sidebar-item" data-path="Music">
+                        <span class="sb-icon">🎵</span> Music
+                    </div>
+                    <div class="sidebar-item" data-path="Videos">
+                        <span class="sb-icon">📽️</span> Videos
+                    </div>
+
+                    <div class="sidebar-group-title" style="margin-top: 16px;">DRIVES</div>
+                    <div class="sidebar-item" data-path="Cyber Storage (C:)">
+                        <span class="sb-icon">💾</span> Cyber Storage (C:)
+                    </div>
+                </div>
+
+                <!-- Files Content Container -->
+                <div class="files-content-area" id="filesContentArea">
+                    <div class="files-grid" id="filesGrid">
+                        <!-- Dynamic file cards rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="files-status-bar" id="filesStatusBar">
+                <div class="status-left">
+                    <span id="filesItemCount">8 Items</span>
+                    <span id="filesSelectionCount">0 selected</span>
+                </div>
+                <div class="status-right">
+                    <div class="storage-indicator">
+                        <span>💾 Storage: 240 GB free of 512 GB</span>
+                        <div class="storage-bar"><div class="storage-fill" style="width: 53%;"></div></div>
+                    </div>
                 </div>
             </div>
         </div>
