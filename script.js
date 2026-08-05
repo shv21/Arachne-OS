@@ -1936,25 +1936,34 @@ const startFullscreenBtn = document.getElementById("startFullscreenBtn");
 const continueWindowBtn = document.getElementById("continueWindowBtn");
 
 function enterOSFullScreen() {
-    const docEl = document.documentElement;
+    const docEl = document.documentElement || document.body;
+    let fsPromise = null;
+
+    document.body.classList.add("os-pseudo-fullscreen");
+
     try {
         if (docEl.requestFullscreen) {
-            docEl.requestFullscreen().catch(err => {
-                console.warn("Fullscreen request warning:", err);
-            });
+            fsPromise = docEl.requestFullscreen();
         } else if (docEl.webkitRequestFullscreen) {
-            docEl.webkitRequestFullscreen();
+            fsPromise = docEl.webkitRequestFullscreen();
         } else if (docEl.mozRequestFullScreen) {
-            docEl.mozRequestFullScreen();
+            fsPromise = docEl.mozRequestFullScreen();
         } else if (docEl.msRequestFullscreen) {
-            docEl.msRequestFullscreen();
+            fsPromise = docEl.msRequestFullscreen();
         }
     } catch (err) {
-        console.warn("Fullscreen exception:", err);
+        console.warn("Native fullscreen unavailable, active in pseudo-fullscreen mode:", err);
+    }
+
+    if (fsPromise && fsPromise.catch) {
+        fsPromise.catch(err => {
+            console.warn("Fullscreen request promise warning:", err);
+        });
     }
 }
 
 function exitOSFullScreen() {
+    document.body.classList.remove("os-pseudo-fullscreen");
     try {
         if (document.exitFullscreen) {
             document.exitFullscreen().catch(err => console.warn(err));
@@ -1971,7 +1980,7 @@ function exitOSFullScreen() {
 }
 
 function isOSFullScreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    return document.body.classList.contains("os-pseudo-fullscreen") || !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
 }
 
 function toggleOSFullScreen() {

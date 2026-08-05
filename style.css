@@ -9,6 +9,24 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Fallback CSS Pseudo Fullscreen */
+body.os-pseudo-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999999 !important;
+  overflow: hidden !important;
+}
+
+body.os-pseudo-fullscreen .descktop-main-screen,
+body.os-pseudo-fullscreen .descktop-lockScreen,
+body.os-pseudo-fullscreen .initial-fullscreen-overlay {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
 /* Initial Fullscreen Welcome Overlay (First of Lock Screen) */
 .initial-fullscreen-overlay {
   position: fixed;
