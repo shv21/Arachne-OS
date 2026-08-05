@@ -319,7 +319,7 @@ maxChromeBtn.addEventListener("click", () => {
 function createNewTab(initialUrl = "chrome://newtab", title = "New Tab") {
     tabIdCounter++;
     const tabId = `tab-${tabIdCounter}`;
-    
+
     const tabData = {
         id: tabId,
         url: initialUrl,
@@ -330,7 +330,7 @@ function createNewTab(initialUrl = "chrome://newtab", title = "New Tab") {
     };
 
     tabs.push(tabData);
-    
+
     // Create Tab UI element
     const tabEl = document.createElement("div");
     tabEl.className = "chrome-tab";
@@ -515,7 +515,7 @@ function bindNtpEvents(contentEl, tabId) {
     if (input) input.focus();
 }
 
-window.handleNtpSearch = function(tabId, query) {
+window.handleNtpSearch = function (tabId, query) {
     if (query) {
         navigateTab(tabId, query);
     }
@@ -767,21 +767,21 @@ fileTreeItems.forEach(item => {
 
 function openVsCodeFile(fileName) {
     let tabData = openVsCodeTabs.find(t => t.name === fileName);
-    
+
     if (!tabData) {
         let content = projectFiles[fileName] || `// New file: ${fileName}\n`;
         let icon = fileName.endsWith(".html") ? "📄" : fileName.endsWith(".css") ? "🎨" : fileName.endsWith(".py") ? "🐍" : fileName.endsWith(".md") ? "📝" : "⚡";
-        
+
         tabData = {
             name: fileName,
             icon: icon,
             content: content
         };
-        
+
         openVsCodeTabs.push(tabData);
         renderVsCodeTabButton(tabData);
     }
-    
+
     switchToVsCodeFile(fileName);
 }
 
@@ -837,7 +837,7 @@ function switchToVsCodeFile(fileName) {
     // Update Code Editor Content
     codeEditor.value = tabData.content;
     vscodeCurrentFileName.textContent = fileName;
-    
+
     // Update Language Mode
     const lang = fileName.endsWith(".html") ? "HTML" : fileName.endsWith(".css") ? "CSS" : fileName.endsWith(".py") ? "Python" : fileName.endsWith(".md") ? "Markdown" : "JavaScript";
     vscodeLangMode.textContent = lang;
@@ -1354,10 +1354,10 @@ maxSettingsBtn.addEventListener("click", () => {
 settingsNavItems.forEach(item => {
     item.addEventListener("click", () => {
         const targetTab = item.getAttribute("data-tab");
-        
+
         settingsNavItems.forEach(nav => nav.classList.remove("active"));
         settingsTabPanels.forEach(panel => panel.classList.add("hide"));
-        
+
         item.classList.add("active");
         const activePanel = document.getElementById(`tab-${targetTab}`);
         if (activePanel) activePanel.classList.remove("hide");
@@ -1370,9 +1370,9 @@ function showToast(message, icon = "✨") {
     if (!settingsToast) return;
     toastMsg.textContent = message;
     settingsToast.querySelector(".toast-icon").textContent = icon;
-    
+
     settingsToast.classList.remove("hide");
-    
+
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
         settingsToast.classList.add("hide");
@@ -1387,13 +1387,13 @@ function playCyberBeep() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         const vol = (parseInt(volumeRange.value, 10) || 80) / 100 * 0.15;
-        
+
         osc.type = "sine";
         osc.frequency.setValueAtTime(880, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.15);
         gain.gain.setValueAtTime(vol, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-        
+
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
@@ -1414,23 +1414,23 @@ if (testSoundBtn) {
 function applyDesktopWallpaper(url, name = "Custom Wallpaper") {
     currentDesktopWallpaper = url;
     currentDesktopName = name;
-    
+
     localStorage.setItem("arachne_desktop_wallpaper", url);
     localStorage.setItem("arachne_desktop_name", name);
-    
+
     if (mainScreen) {
         mainScreen.style.backgroundImage = `url("${url}")`;
         mainScreen.style.backgroundSize = currentWallpaperFit;
     }
-    
+
     if (miniDesktopScreen) {
         miniDesktopScreen.style.backgroundImage = `url("${url}")`;
         miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
     }
-    
+
     if (miniScreenLabel) miniScreenLabel.textContent = name;
     if (activeDesktopName) activeDesktopName.textContent = name;
-    
+
     updateWallpaperGalleryBadges();
     showToast(`Desktop Wallpaper updated to "${name}"!`, "🎨");
     playCyberBeep();
@@ -1439,16 +1439,16 @@ function applyDesktopWallpaper(url, name = "Custom Wallpaper") {
 function applyLockWallpaper(url, name = "Custom Lock Screen") {
     currentLockWallpaper = url;
     currentLockName = name;
-    
+
     localStorage.setItem("arachne_lock_wallpaper", url);
     localStorage.setItem("arachne_lock_name", name);
-    
+
     if (lockScreen) {
         lockScreen.style.backgroundImage = `url("${url}")`;
     }
-    
+
     if (activeLockName) activeLockName.textContent = name;
-    
+
     updateWallpaperGalleryBadges();
     showToast(`Lock Screen Wallpaper updated to "${name}"!`, "🔒");
     playCyberBeep();
@@ -1458,13 +1458,13 @@ function updateWallpaperGalleryBadges() {
     const cards = document.querySelectorAll(".wallpaper-card");
     cards.forEach(card => {
         const cardUrl = card.getAttribute("data-url");
-        
+
         // Remove existing badges inside thumb
         const wrapper = card.querySelector(".wallpaper-thumb-wrapper");
         if (wrapper) {
             const oldBadges = wrapper.querySelectorAll(".wallpaper-badge");
             oldBadges.forEach(b => b.remove());
-            
+
             if (cardUrl === currentDesktopWallpaper) {
                 const badge = document.createElement("span");
                 badge.className = "wallpaper-badge desktop-badge";
@@ -1474,7 +1474,7 @@ function updateWallpaperGalleryBadges() {
             } else {
                 card.classList.remove("active-desktop");
             }
-            
+
             if (cardUrl === currentLockWallpaper) {
                 const badge = document.createElement("span");
                 badge.className = "wallpaper-badge lock-badge";
@@ -1504,7 +1504,7 @@ function initOSWallpapers() {
     if (activeDesktopName) activeDesktopName.textContent = currentDesktopName;
     if (activeLockName) activeLockName.textContent = currentLockName;
     if (wallpaperFitSelect) wallpaperFitSelect.value = currentWallpaperFit;
-    
+
     updateWallpaperGalleryBadges();
 }
 
@@ -1514,7 +1514,7 @@ if (wallpaperGrid) {
         const desktopBtn = e.target.closest(".apply-desktop-btn");
         const lockBtn = e.target.closest(".apply-lock-btn");
         const card = e.target.closest(".wallpaper-card");
-        
+
         if (desktopBtn) {
             e.stopPropagation();
             const url = desktopBtn.getAttribute("data-url");
@@ -1558,7 +1558,7 @@ if (browseFileBtn && customWallpaperFile) {
     browseFileBtn.addEventListener("click", () => {
         customWallpaperFile.click();
     });
-    
+
     customWallpaperFile.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -1589,10 +1589,10 @@ if (applyCustomUrlBtn && customWallpaperUrl) {
 function updateDisplayFilters() {
     const bright = brightnessRange ? brightnessRange.value : 100;
     const contrast = contrastRange ? contrastRange.value : 100;
-    
+
     if (brightnessVal) brightnessVal.textContent = `${bright}%`;
     if (contrastVal) contrastVal.textContent = `${contrast}%`;
-    
+
     if (mainScreen) {
         mainScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
     }
@@ -1635,212 +1635,18 @@ if (resetSettingsBtn) {
             localStorage.removeItem("arachne_lock_wallpaper");
             localStorage.removeItem("arachne_lock_name");
             localStorage.removeItem("arachne_wallpaper_fit");
-            
+
             currentDesktopWallpaper = "./images/spider-man-logo-10k-3840x2160-15274.png";
             currentDesktopName = "Spider-Man Logo 10K";
             currentLockWallpaper = "./images/spider-man-across-3840x2160-11476.png";
             currentLockName = "Across Spider-Verse";
             currentWallpaperFit = "cover";
-            
+
             if (brightnessRange) brightnessRange.value = 100;
             if (contrastRange) contrastRange.value = 100;
             if (volumeRange) volumeRange.value = 80;
             updateDisplayFilters();
-            
-            initOSWallpapers();
-function updateWallpaperGalleryBadges() {
-    const cards = document.querySelectorAll(".wallpaper-card");
-    cards.forEach(card => {
-        const cardUrl = card.getAttribute("data-url");
-        
-        // Remove existing badges inside thumb
-        const wrapper = card.querySelector(".wallpaper-thumb-wrapper");
-        if (wrapper) {
-            const oldBadges = wrapper.querySelectorAll(".wallpaper-badge");
-            oldBadges.forEach(b => b.remove());
-            
-            if (cardUrl === currentDesktopWallpaper) {
-                const badge = document.createElement("span");
-                badge.className = "wallpaper-badge desktop-badge";
-                badge.textContent = "DESKTOP";
-                wrapper.appendChild(badge);
-                card.classList.add("active-desktop");
-            } else {
-                card.classList.remove("active-desktop");
-            }
-            
-            if (cardUrl === currentLockWallpaper) {
-                const badge = document.createElement("span");
-                badge.className = "wallpaper-badge lock-badge";
-                badge.textContent = "LOCK SCREEN";
-                wrapper.appendChild(badge);
-                card.classList.add("active-lock");
-            } else {
-                card.classList.remove("active-lock");
-            }
-        }
-    });
-}
 
-function initOSWallpapers() {
-    if (mainScreen) {
-        mainScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
-        mainScreen.style.backgroundSize = currentWallpaperFit;
-    }
-    if (lockScreen) {
-        lockScreen.style.backgroundImage = `url("${currentLockWallpaper}")`;
-    }
-    if (miniDesktopScreen) {
-        miniDesktopScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
-        miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
-    }
-    if (miniScreenLabel) miniScreenLabel.textContent = currentDesktopName;
-    if (activeDesktopName) activeDesktopName.textContent = currentDesktopName;
-    if (activeLockName) activeLockName.textContent = currentLockName;
-    if (wallpaperFitSelect) wallpaperFitSelect.value = currentWallpaperFit;
-    
-    updateWallpaperGalleryBadges();
-}
-
-// Bind Gallery Buttons
-if (wallpaperGrid) {
-    wallpaperGrid.addEventListener("click", (e) => {
-        const desktopBtn = e.target.closest(".apply-desktop-btn");
-        const lockBtn = e.target.closest(".apply-lock-btn");
-        const card = e.target.closest(".wallpaper-card");
-        
-        if (desktopBtn) {
-            e.stopPropagation();
-            const url = desktopBtn.getAttribute("data-url");
-            const name = desktopBtn.getAttribute("data-name");
-            applyDesktopWallpaper(url, name);
-        } else if (lockBtn) {
-            e.stopPropagation();
-            const url = lockBtn.getAttribute("data-url");
-            const name = lockBtn.getAttribute("data-name");
-            applyLockWallpaper(url, name);
-        } else if (card) {
-            const url = card.getAttribute("data-url");
-            const name = card.getAttribute("data-name");
-            applyDesktopWallpaper(url, name);
-        }
-    });
-}
-
-// Wallpaper Fit Mode Selector
-if (wallpaperFitSelect) {
-    wallpaperFitSelect.addEventListener("change", (e) => {
-        currentWallpaperFit = e.target.value;
-        localStorage.setItem("arachne_wallpaper_fit", currentWallpaperFit);
-        if (mainScreen) mainScreen.style.backgroundSize = currentWallpaperFit;
-        if (miniDesktopScreen) miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
-        showToast(`Wallpaper scaling set to "${currentWallpaperFit}"`, "🖼️");
-    });
-}
-
-// Preview Lock Screen Button
-if (previewLockscreenBtn) {
-    previewLockscreenBtn.addEventListener("click", () => {
-        mainScreen.classList.add("hide");
-        lockScreen.classList.remove("hide");
-        showToast("Lock Screen preview active. Click Unlock to return.", "👁️");
-    });
-}
-
-// Browse Custom File Upload
-if (browseFileBtn && customWallpaperFile) {
-    browseFileBtn.addEventListener("click", () => {
-        customWallpaperFile.click();
-    });
-    
-    customWallpaperFile.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const dataUrl = event.target.result;
-                applyDesktopWallpaper(dataUrl, file.name);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
-
-// Apply Custom URL
-if (applyCustomUrlBtn && customWallpaperUrl) {
-    applyCustomUrlBtn.addEventListener("click", () => {
-        const url = customWallpaperUrl.value.trim();
-        if (url) {
-            applyDesktopWallpaper(url, "Web URL Wallpaper");
-            customWallpaperUrl.value = "";
-        } else {
-            showToast("Please enter a valid image URL!", "⚠️");
-        }
-    });
-}
-
-// Display Brightness & Contrast Controls
-function updateDisplayFilters() {
-    const bright = brightnessRange ? brightnessRange.value : 100;
-    const contrast = contrastRange ? contrastRange.value : 100;
-    
-    if (brightnessVal) brightnessVal.textContent = `${bright}%`;
-    if (contrastVal) contrastVal.textContent = `${contrast}%`;
-    
-    if (mainScreen) {
-        mainScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
-    }
-    if (miniDesktopScreen) {
-        miniDesktopScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
-    }
-}
-
-if (brightnessRange) brightnessRange.addEventListener("input", updateDisplayFilters);
-if (contrastRange) contrastRange.addEventListener("input", updateDisplayFilters);
-
-// Volume Range Display
-if (volumeRange && volumeVal) {
-    volumeRange.addEventListener("input", () => {
-        volumeVal.textContent = `${volumeRange.value}%`;
-    });
-}
-
-// Glass Blur Toggle
-if (glassBlurToggle) {
-    glassBlurToggle.addEventListener("change", (e) => {
-        const windows = document.querySelectorAll(".window");
-        windows.forEach(w => {
-            if (e.target.checked) {
-                w.style.backdropFilter = "blur(20px)";
-            } else {
-                w.style.backdropFilter = "none";
-            }
-        });
-        showToast(e.target.checked ? "Glassmorphism blur enabled" : "Glassmorphism blur disabled", "✨");
-    });
-}
-
-// Reset Settings Button
-if (resetSettingsBtn) {
-    resetSettingsBtn.addEventListener("click", () => {
-        if (confirm("Are you sure you want to reset all settings and wallpapers to default?")) {
-            localStorage.removeItem("arachne_desktop_wallpaper");
-            localStorage.removeItem("arachne_desktop_name");
-            localStorage.removeItem("arachne_lock_wallpaper");
-            localStorage.removeItem("arachne_lock_name");
-            localStorage.removeItem("arachne_wallpaper_fit");
-            
-            currentDesktopWallpaper = "./images/spider-man-logo-10k-3840x2160-15274.png";
-            currentDesktopName = "Spider-Man Logo 10K";
-            currentLockWallpaper = "./images/spider-man-across-3840x2160-11476.png";
-            currentLockName = "Across Spider-Verse";
-            currentWallpaperFit = "cover";
-            
-            if (brightnessRange) brightnessRange.value = 100;
-            if (contrastRange) contrastRange.value = 100;
-            if (volumeRange) volumeRange.value = 80;
-            updateDisplayFilters();
-            
             initOSWallpapers();
             showToast("Settings reset to factory defaults!", "🔄");
         }
@@ -1865,8 +1671,12 @@ const homeClockTimeEl = document.getElementById("homeClockTime");
 const homeClockDateEl = document.getElementById("homeClockDate");
 
 // Fullscreen Toggle Elements
+const initialFullscreenOverlay = document.getElementById("initialFullscreenOverlay");
+const startFullscreenBtn = document.getElementById("startFullscreenBtn");
+const continueWindowBtn = document.getElementById("continueWindowBtn");
 const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
 const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
+const standaloneFullscreenBtn = document.getElementById("fullscreenBtn");
 
 // Weather Elements
 const weatherIcon = document.getElementById("weatherIcon");
@@ -1931,13 +1741,6 @@ setInterval(updateRealTimeClock, 1000);
 updateRealTimeClock();
 
 // Fullscreen Control Logic & Cross-Browser Engine
-const initialFullscreenOverlay = document.getElementById("initialFullscreenOverlay");
-const startFullscreenBtn = document.getElementById("startFullscreenBtn");
-const continueWindowBtn = document.getElementById("continueWindowBtn");
-const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
-const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
-const standaloneFullscreenBtn = document.getElementById("fullscreenBtn");
-
 function enterOSFullScreen() {
     // Hide initial overlay first
     if (initialFullscreenOverlay) {
@@ -2011,7 +1814,7 @@ function updateFullscreenButtonsUI() {
     if (standaloneFullscreenBtn) standaloneFullscreenBtn.textContent = isFS ? "⛶ Exit Full Screen" : "⛶ Full Screen";
 }
 
-// Initial Screen Event Listeners
+// Event Listeners for Fullscreen Buttons
 if (startFullscreenBtn) {
     startFullscreenBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -2087,7 +1890,6 @@ function updateWeatherUI(data) {
 
 async function fetchLiveWeather() {
     try {
-        // Try fetching open-meteo weather API for live weather
         const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current_weather=true");
         if (res.ok) {
             const data = await res.json();
@@ -2115,7 +1917,7 @@ async function fetchLiveWeather() {
             return;
         }
     } catch (e) {
-        // Fallback to presets if offline
+        // Fallback to presets
     }
     
     updateWeatherUI(weatherPresets[currentWeatherIndex]);
@@ -2142,3 +1944,8 @@ if (headerWeatherWidget) {
 
 // Initial Weather Fetch
 fetchLiveWeather();
+
+
+
+
+
