@@ -9,6 +9,135 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Initial Fullscreen Welcome Overlay (First of Lock Screen) */
+.initial-fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url("./images/spider-man-logo-10k-3840x2160-15274.png") center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  user-select: none;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.initial-fullscreen-overlay.hide-overlay {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.initial-card {
+  background: rgba(9, 12, 22, 0.92);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 225, 255, 0.4);
+  border-radius: 24px;
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 225, 255, 0.3);
+  animation: floatCard 4s infinite ease-in-out;
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.initial-spider-logo {
+  font-size: 54px;
+  filter: drop-shadow(0 0 20px rgba(0, 225, 255, 0.8));
+}
+
+.initial-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 15px rgba(0, 225, 255, 0.6);
+}
+
+.initial-subtitle {
+  font-size: 13px;
+  color: #00ffff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.initial-notif-box {
+  background: rgba(255, 0, 85, 0.1);
+  border: 1px solid rgba(255, 0, 85, 0.35);
+  border-radius: 14px;
+  padding: 12px 18px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.initial-notif-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #ff0055;
+  letter-spacing: 1px;
+}
+
+.initial-notif-msg {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.initial-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.primary-fs-btn {
+  background: linear-gradient(90deg, #00ffff, #00bfff);
+  color: #000000;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 25px rgba(0, 225, 255, 0.6);
+}
+
+.primary-fs-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px #00ffff;
+}
+
+.secondary-skip-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.secondary-skip-btn:hover {
+  color: #00ffff;
+}
+
 /* Desktop */
 
 .descktop-main-screen {

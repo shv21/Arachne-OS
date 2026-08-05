@@ -1930,41 +1930,107 @@ function updateRealTimeClock() {
 setInterval(updateRealTimeClock, 1000);
 updateRealTimeClock();
 
-// Fullscreen Control Logic
-function toggleOSFullScreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().then(() => {
-            showToast("Entered Full Screen OS Mode!", "📺");
-        }).catch(err => {
-            showToast("Full Screen mode requested", "📺");
-        });
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen().then(() => {
-                showToast("Exited Full Screen Mode", "📺");
+// Fullscreen Control Logic & Cross-Browser Engine
+const initialFullscreenOverlay = document.getElementById("initialFullscreenOverlay");
+const startFullscreenBtn = document.getElementById("startFullscreenBtn");
+const continueWindowBtn = document.getElementById("continueWindowBtn");
+
+function enterOSFullScreen() {
+    const docEl = document.documentElement;
+    try {
+        if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(err => {
+                console.warn("Fullscreen request warning:", err);
             });
+        } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+            docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+            docEl.msRequestFullscreen();
         }
+    } catch (err) {
+        console.warn("Fullscreen exception:", err);
+    }
+}
+
+function exitOSFullScreen() {
+    try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => console.warn(err));
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    } catch (err) {
+        console.warn("Exit Fullscreen error:", err);
+    }
+}
+
+function isOSFullScreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+}
+
+function toggleOSFullScreen() {
+    if (!isOSFullScreen()) {
+        enterOSFullScreen();
+    } else {
+        exitOSFullScreen();
     }
 }
 
 function updateFullscreenButtonsUI() {
-    const isFS = !!document.fullscreenElement;
+    const isFS = isOSFullScreen();
     const btnText = isFS ? "📺 Exit Full Screen" : "📺 Switch to Full Screen";
     const headerBtnText = isFS ? "📺 Exit FS" : "📺 Fullscreen";
     
     if (lockScreenFullscreenBtn) lockScreenFullscreenBtn.textContent = btnText;
     if (desktopFullscreenBtn) desktopFullscreenBtn.textContent = headerBtnText;
+    if (startFullscreenBtn) startFullscreenBtn.textContent = isFS ? "📺 Exit Full Screen" : "📺 Switch to Full Screen";
+}
+
+// Initial Screen (First of Lock Screen) Event Listeners
+if (startFullscreenBtn) {
+    startFullscreenBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        enterOSFullScreen();
+        if (initialFullscreenOverlay) {
+            initialFullscreenOverlay.classList.add("hide-overlay");
+        }
+        showToast("Welcome to Arachne-OS Cyber Edition!", "🕷️");
+    });
+}
+
+if (continueWindowBtn) {
+    continueWindowBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (initialFullscreenOverlay) {
+            initialFullscreenOverlay.classList.add("hide-overlay");
+        }
+    });
 }
 
 if (lockScreenFullscreenBtn) {
-    lockScreenFullscreenBtn.addEventListener("click", toggleOSFullScreen);
+    lockScreenFullscreenBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleOSFullScreen();
+    });
 }
 
 if (desktopFullscreenBtn) {
-    desktopFullscreenBtn.addEventListener("click", toggleOSFullScreen);
+    desktopFullscreenBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleOSFullScreen();
+    });
 }
 
 document.addEventListener("fullscreenchange", updateFullscreenButtonsUI);
+document.addEventListener("webkitfullscreenchange", updateFullscreenButtonsUI);
+document.addEventListener("mozfullscreenchange", updateFullscreenButtonsUI);
+document.addEventListener("MSFullscreenChange", updateFullscreenButtonsUI);
 
 // Live Weather Engine
 const weatherPresets = [
