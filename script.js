@@ -1934,6 +1934,9 @@ updateRealTimeClock();
 const initialFullscreenOverlay = document.getElementById("initialFullscreenOverlay");
 const startFullscreenBtn = document.getElementById("startFullscreenBtn");
 const continueWindowBtn = document.getElementById("continueWindowBtn");
+const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
+const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
+const standaloneFullscreenBtn = document.getElementById("fullscreenBtn");
 
 function enterOSFullScreen() {
     // Hide initial overlay first
@@ -1986,7 +1989,7 @@ function exitOSFullScreen() {
 }
 
 function isOSFullScreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    return document.body.classList.contains("os-pseudo-fullscreen") || !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
 }
 
 function toggleOSFullScreen() {
@@ -2005,6 +2008,7 @@ function updateFullscreenButtonsUI() {
     if (lockScreenFullscreenBtn) lockScreenFullscreenBtn.textContent = btnText;
     if (desktopFullscreenBtn) desktopFullscreenBtn.textContent = headerBtnText;
     if (startFullscreenBtn) startFullscreenBtn.textContent = isFS ? "📺 Exit Full Screen" : "📺 Switch to Full Screen";
+    if (standaloneFullscreenBtn) standaloneFullscreenBtn.textContent = isFS ? "⛶ Exit Full Screen" : "⛶ Full Screen";
 }
 
 // Initial Screen Event Listeners
@@ -2041,6 +2045,13 @@ if (lockScreenFullscreenBtn) {
 
 if (desktopFullscreenBtn) {
     desktopFullscreenBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleOSFullScreen();
+    });
+}
+
+if (standaloneFullscreenBtn) {
+    standaloneFullscreenBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         toggleOSFullScreen();
     });
