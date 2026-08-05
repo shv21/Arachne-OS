@@ -339,6 +339,54 @@ body.os-pseudo-fullscreen .initial-fullscreen-overlay {
   gap: 14px;
 }
 
+/* Header System Status Group (Wi-Fi, Battery, Audio) */
+.header-status-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3px 10px;
+  transition: all 0.25s ease;
+}
+
+.header-status-group:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #e0e0e0;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.status-item:hover {
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.12);
+}
+
+.status-item .status-icon {
+  font-size: 13px;
+}
+
+.status-item .status-label {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.battery-item.charging .status-icon {
+  filter: drop-shadow(0 0 4px #10b981);
+}
+
 .brand-icon {
   font-size: 16px;
 }

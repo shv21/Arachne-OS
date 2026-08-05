@@ -83,13 +83,27 @@
             </div>
 
             <div class="header-right">
+                <!-- System Status Indicators (Wi-Fi & Battery & Audio) -->
+                <div class="header-status-group" id="headerStatusGroup">
+                    <div class="status-item wifi-item" id="wifiStatusBtn" title="Wi-Fi: Connected (Online)">
+                        <span class="status-icon" id="wifiIcon">📶</span>
+                        <span class="status-label" id="wifiLabel">CyberNet</span>
+                    </div>
+                    <div class="status-item battery-item" id="batteryStatusBtn" title="Battery: 98% (Charging)">
+                        <span class="status-icon" id="batteryIcon">🔋</span>
+                        <span class="status-label" id="batteryLabel">98%</span>
+                    </div>
+                    <div class="status-item audio-item" id="audioStatusBtn" title="Audio: 80%">
+                        <span class="status-icon" id="audioIcon">🔊</span>
+                    </div>
+                </div>
+
                 <!-- Real-Time Clock Widget -->
                 <div class="header-clock-widget">
                     <div class="desktop-time" id="desktopTime">00:00:00 AM</div>
                     <div class="desktop-date" id="desktopDate">Wed, Aug 5, 2026</div>
                 </div>
-                <button class="header-fs-btn" id="desktopFullscreenBtn" title="Toggle Full Screen">📺
-                    Fullscreen</button>
+                <button class="header-fs-btn" id="desktopFullscreenBtn" title="Toggle Full Screen">📺 Fullscreen</button>
             </div>
         </div>
 

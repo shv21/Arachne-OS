@@ -2128,6 +2128,102 @@ if (headerWeatherWidget) {
 // Initial Weather Fetch
 fetchLiveWeather();
 
+// -------------------------------------------------------------
+// System Status Bar Engine (Wi-Fi, Battery, Sound)
+// -------------------------------------------------------------
+const wifiStatusBtn = document.getElementById("wifiStatusBtn");
+const wifiIcon = document.getElementById("wifiIcon");
+const wifiLabel = document.getElementById("wifiLabel");
+
+const batteryStatusBtn = document.getElementById("batteryStatusBtn");
+const batteryIcon = document.getElementById("batteryIcon");
+const batteryLabel = document.getElementById("batteryLabel");
+
+const audioStatusBtn = document.getElementById("audioStatusBtn");
+const audioIcon = document.getElementById("audioIcon");
+
+// Wi-Fi Status Monitor
+function updateWifiStatus() {
+    const isOnline = navigator.onLine;
+    if (wifiIcon) wifiIcon.textContent = isOnline ? "📶" : "📡";
+    if (wifiLabel) wifiLabel.textContent = isOnline ? "5G Online" : "Offline";
+    if (wifiStatusBtn) wifiStatusBtn.title = isOnline ? "Wi-Fi: Connected to CyberNet 5G (High Speed)" : "Wi-Fi: Disconnected (Offline)";
+}
+
+window.addEventListener("online", () => {
+    updateWifiStatus();
+    showToast("Wi-Fi Connected: CyberNet 5G Online", "📶");
+});
+window.addEventListener("offline", () => {
+    updateWifiStatus();
+    showToast("Wi-Fi Disconnected: System Offline", "📡");
+});
+
+if (wifiStatusBtn) {
+    wifiStatusBtn.addEventListener("click", () => {
+        const isOnline = navigator.onLine;
+        showToast(isOnline ? "Wi-Fi Status: Connected to CyberNet 5G (Signal 100%)" : "Wi-Fi Status: Offline (No Internet)", "📶");
+        playCyberBeep();
+    });
+}
+
+// Battery Status Monitor with Web Battery API Support
+async function initBatteryMonitor() {
+    if ("getBattery" in navigator) {
+        try {
+            const battery = await navigator.getBattery();
+            
+            function updateBatteryInfo() {
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging;
+                
+                if (batteryLabel) batteryLabel.textContent = `${level}%${charging ? '⚡' : ''}`;
+                if (batteryIcon) {
+                    if (charging) batteryIcon.textContent = "⚡🔋";
+                    else if (level > 80) batteryIcon.textContent = "🔋";
+                    else if (level > 30) batteryIcon.textContent = "🪫";
+                    else batteryIcon.textContent = "⚠️🪫";
+                }
+                
+                if (batteryStatusBtn) {
+                    batteryStatusBtn.title = `Battery: ${level}% (${charging ? "Charging AC Power" : "Discharging Battery"})`;
+                    if (charging) batteryStatusBtn.classList.add("charging");
+                    else batteryStatusBtn.classList.remove("charging");
+                }
+            }
+
+            updateBatteryInfo();
+            battery.addEventListener("levelchange", updateBatteryInfo);
+            battery.addEventListener("chargingchange", updateBatteryInfo);
+            return;
+        } catch (e) {
+            console.warn("Battery API unavailable:", e);
+        }
+    }
+    
+    // Default Fallback
+    if (batteryLabel) batteryLabel.textContent = "98%⚡";
+    if (batteryIcon) batteryIcon.textContent = "🔋";
+}
+
+if (batteryStatusBtn) {
+    batteryStatusBtn.addEventListener("click", () => {
+        showToast(batteryStatusBtn.title || "Battery Status: 98% Quantum Power", "🔋");
+        playCyberBeep();
+    });
+}
+
+if (audioStatusBtn) {
+    audioStatusBtn.addEventListener("click", () => {
+        const vol = volumeRange ? volumeRange.value : 80;
+        showToast(`System Master Volume: ${vol}%`, "🔊");
+        playCyberBeep();
+    });
+}
+
+updateWifiStatus();
+initBatteryMonitor();
+
 
 
 
