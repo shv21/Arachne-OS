@@ -36,7 +36,7 @@
                 <p>Files</p>
             </div>
 
-            <div class="app">
+            <div class="app settings-app-btn" id="dockSettingsBtn">
                 <img src="./incons/5.jfif" alt="Settings">
                 <p>Settings</p>
             </div>
@@ -72,6 +72,11 @@
             <div class="app1 calc-app-btn" id="calcAppBtn">
                 <img src="./incons/4.jfif" alt="Calculator">
                 <p>Calculator</p>
+            </div>
+
+            <div class="app1 settings-app-btn" id="settingsAppBtn">
+                <img src="./incons/5.jfif" alt="Settings">
+                <p>Settings</p>
             </div>
 
 
@@ -399,6 +404,326 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Settings Window -->
+        <div class="window settings-window hide" id="settingsWindow">
+            <!-- Header Bar -->
+            <div class="settings-header" id="settingsHeader">
+                <div class="settings-title">
+                    <span class="settings-icon">⚙️</span> Arachne Settings
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn minimize-btn" id="minSettingsBtn" title="Minimize">−</button>
+                    <button class="win-btn maximize-btn" id="maxSettingsBtn" title="Maximize">□</button>
+                    <button class="win-btn close-btn" id="closeSettingsBtn" title="Close">✕</button>
+                </div>
+            </div>
+
+            <!-- Settings Main Body / Workspace -->
+            <div class="settings-workspace">
+                <!-- Navigation Sidebar -->
+                <div class="settings-sidebar">
+                    <div class="settings-nav-item active" data-tab="personalization">
+                        <span class="nav-icon">🎨</span> Personalization
+                    </div>
+                    <div class="settings-nav-item" data-tab="display">
+                        <span class="nav-icon">🖥️</span> Display & Theme
+                    </div>
+                    <div class="settings-nav-item" data-tab="sound">
+                        <span class="nav-icon">🔔</span> Sound & Audio
+                    </div>
+                    <div class="settings-nav-item" data-tab="about">
+                        <span class="nav-icon">ℹ️</span> System & About
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="settings-content">
+
+                    <!-- Personalization Tab -->
+                    <div class="settings-tab-panel active" id="tab-personalization">
+                        <div class="panel-header">
+                            <h2>🎨 Personalization & Wallpapers</h2>
+                            <p>Customize your Arachne OS Desktop background, Lock Screen, and visual appearance.</p>
+                        </div>
+
+                        <!-- Live Preview Card -->
+                        <div class="settings-card preview-card">
+                            <div class="card-section-title">Live Desktop Preview</div>
+                            <div class="live-preview-container">
+                                <div class="mini-monitor">
+                                    <div class="mini-screen" id="miniDesktopScreen">
+                                        <div class="mini-dock">
+                                            <div class="mini-icon"></div>
+                                            <div class="mini-icon"></div>
+                                            <div class="mini-icon"></div>
+                                        </div>
+                                        <div class="mini-label" id="miniScreenLabel">Spider-Man Logo 10K</div>
+                                    </div>
+                                </div>
+                                <div class="preview-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Active Desktop Wallpaper:</span>
+                                        <span class="meta-val" id="activeDesktopName">Spider-Man Logo 10K</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Active Lock Screen Wallpaper:</span>
+                                        <span class="meta-val" id="activeLockName">Across Spider-Verse</span>
+                                    </div>
+                                    <div class="meta-actions">
+                                        <button class="settings-btn secondary-btn" id="previewLockscreenBtn">👁️ Lock Screen View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wallpaper Gallery Grid -->
+                        <div class="settings-card">
+                            <div class="card-section-title">Choose Wallpaper (Images Gallery)</div>
+                            <div class="wallpaper-grid" id="wallpaperGrid">
+                                <div class="wallpaper-card active" data-url="./images/spider-man-logo-10k-3840x2160-15274.png" data-name="Spider-Man Logo 10K">
+                                    <div class="wallpaper-thumb-wrapper">
+                                        <img src="./images/spider-man-logo-10k-3840x2160-15274.png" alt="Spider-Man Logo 10K" class="wallpaper-thumb">
+                                        <span class="wallpaper-badge desktop-badge">DESKTOP</span>
+                                    </div>
+                                    <div class="wallpaper-info">
+                                        <div class="wallpaper-title">Spider-Man Logo 10K</div>
+                                        <div class="wallpaper-desc">Official Arachne 10K Cyber Emblem</div>
+                                    </div>
+                                    <div class="wallpaper-card-actions">
+                                        <button class="wp-btn apply-desktop-btn" data-url="./images/spider-man-logo-10k-3840x2160-15274.png" data-name="Spider-Man Logo 10K">Set Desktop</button>
+                                        <button class="wp-btn apply-lock-btn" data-url="./images/spider-man-logo-10k-3840x2160-15274.png" data-name="Spider-Man Logo 10K">Set Lock</button>
+                                    </div>
+                                </div>
+
+                                <div class="wallpaper-card" data-url="./images/spider-man-across-3840x2160-11476.png" data-name="Across Spider-Verse">
+                                    <div class="wallpaper-thumb-wrapper">
+                                        <img src="./images/spider-man-across-3840x2160-11476.png" alt="Across Spider-Verse" class="wallpaper-thumb">
+                                        <span class="wallpaper-badge lock-badge">LOCK SCREEN</span>
+                                    </div>
+                                    <div class="wallpaper-info">
+                                        <div class="wallpaper-title">Across Spider-Verse</div>
+                                        <div class="wallpaper-desc">Glitch Multiverse Art (3840x2160)</div>
+                                    </div>
+                                    <div class="wallpaper-card-actions">
+                                        <button class="wp-btn apply-desktop-btn" data-url="./images/spider-man-across-3840x2160-11476.png" data-name="Across Spider-Verse">Set Desktop</button>
+                                        <button class="wp-btn apply-lock-btn" data-url="./images/spider-man-across-3840x2160-11476.png" data-name="Across Spider-Verse">Set Lock</button>
+                                    </div>
+                                </div>
+
+                                <div class="wallpaper-card" data-url="./images/wallpaper1.jfif" data-name="Cyber Web Matrix">
+                                    <div class="wallpaper-thumb-wrapper">
+                                        <img src="./images/wallpaper1.jfif" alt="Cyber Web Matrix" class="wallpaper-thumb">
+                                    </div>
+                                    <div class="wallpaper-info">
+                                        <div class="wallpaper-title">Cyber Web Matrix</div>
+                                        <div class="wallpaper-desc">Dark Synthwave Webbing Wallpaper</div>
+                                    </div>
+                                    <div class="wallpaper-card-actions">
+                                        <button class="wp-btn apply-desktop-btn" data-url="./images/wallpaper1.jfif" data-name="Cyber Web Matrix">Set Desktop</button>
+                                        <button class="wp-btn apply-lock-btn" data-url="./images/wallpaper1.jfif" data-name="Cyber Web Matrix">Set Lock</button>
+                                    </div>
+                                </div>
+
+                                <div class="wallpaper-card" data-url="./images/wallpaper2.jfif" data-name="Neon Red Cyber Grid">
+                                    <div class="wallpaper-thumb-wrapper">
+                                        <img src="./images/wallpaper2.jfif" alt="Neon Red Cyber Grid" class="wallpaper-thumb">
+                                    </div>
+                                    <div class="wallpaper-info">
+                                        <div class="wallpaper-title">Neon Red Cyber Grid</div>
+                                        <div class="wallpaper-desc">Futuristic High-Tech Crimson Texture</div>
+                                    </div>
+                                    <div class="wallpaper-card-actions">
+                                        <button class="wp-btn apply-desktop-btn" data-url="./images/wallpaper2.jfif" data-name="Neon Red Cyber Grid">Set Desktop</button>
+                                        <button class="wp-btn apply-lock-btn" data-url="./images/wallpaper2.jfif" data-name="Neon Red Cyber Grid">Set Lock</button>
+                                    </div>
+                                </div>
+
+                                <div class="wallpaper-card" data-url="./images/wallpaper3.jfif" data-name="Arachne Webweave">
+                                    <div class="wallpaper-thumb-wrapper">
+                                        <img src="./images/wallpaper3.jfif" alt="Arachne Webweave" class="wallpaper-thumb">
+                                    </div>
+                                    <div class="wallpaper-info">
+                                        <div class="wallpaper-title">Arachne Webweave</div>
+                                        <div class="wallpaper-desc">High-Density Cyber Armor Weave</div>
+                                    </div>
+                                    <div class="wallpaper-card-actions">
+                                        <button class="wp-btn apply-desktop-btn" data-url="./images/wallpaper3.jfif" data-name="Arachne Webweave">Set Desktop</button>
+                                        <button class="wp-btn apply-lock-btn" data-url="./images/wallpaper3.jfif" data-name="Arachne Webweave">Set Lock</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wallpaper Fit & Custom Options -->
+                        <div class="settings-card">
+                            <div class="card-section-title">Custom Wallpaper & Scaling</div>
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Wallpaper Fit Mode</span>
+                                    <span class="row-desc">Choose how the background image scales on your screen.</span>
+                                </div>
+                                <select class="settings-select" id="wallpaperFitSelect">
+                                    <option value="cover" selected>Fill Screen (Cover)</option>
+                                    <option value="contain">Fit Image (Contain)</option>
+                                    <option value="100% 100%">Stretch to Fill</option>
+                                    <option value="center">Original Center</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Upload Custom Wallpaper</span>
+                                    <span class="row-desc">Select an image file from your computer.</span>
+                                </div>
+                                <div class="row-action">
+                                    <input type="file" id="customWallpaperFile" accept="image/*" style="display: none;">
+                                    <button class="settings-btn primary-btn" id="browseFileBtn">📁 Browse Image...</button>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Custom Image URL</span>
+                                    <span class="row-desc">Paste an online image link to set as background.</span>
+                                </div>
+                                <div class="row-action inline-form">
+                                    <input type="text" class="settings-input" id="customWallpaperUrl" placeholder="https://example.com/wallpaper.jpg">
+                                    <button class="settings-btn primary-btn" id="applyCustomUrlBtn">Apply URL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Display & Theme Tab -->
+                    <div class="settings-tab-panel hide" id="tab-display">
+                        <div class="panel-header">
+                            <h2>🖥️ Display & Visual Effects</h2>
+                            <p>Adjust brightness, theme accent colors, and desktop glow parameters.</p>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Desktop Brightness</span>
+                                    <span class="row-desc">Adjust the overall luminance of the desktop wallpaper.</span>
+                                </div>
+                                <div class="range-wrapper">
+                                    <input type="range" class="settings-range" id="brightnessRange" min="30" max="150" value="100">
+                                    <span class="range-val" id="brightnessVal">100%</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Contrast & Saturation</span>
+                                    <span class="row-desc">Enhance spider cyber colors and neon vibrancy.</span>
+                                </div>
+                                <div class="range-wrapper">
+                                    <input type="range" class="settings-range" id="contrastRange" min="50" max="150" value="100">
+                                    <span class="range-val" id="contrastVal">100%</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Backdrop Glass Blur</span>
+                                    <span class="row-desc">Enable glassmorphism blur behind open OS windows.</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="glassBlurToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sound Tab -->
+                    <div class="settings-tab-panel hide" id="tab-sound">
+                        <div class="panel-header">
+                            <h2>🔔 Sound & System Audio</h2>
+                            <p>Configure Arachne OS event sounds and notification alerts.</p>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">OS Interface Sound Effects</span>
+                                    <span class="row-desc">Play subtle synth audio when opening apps or clicking buttons.</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="soundEffectsToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Master System Volume</span>
+                                    <span class="row-desc">Control overall notification volume level.</span>
+                                </div>
+                                <div class="range-wrapper">
+                                    <input type="range" class="settings-range" id="volumeRange" min="0" max="100" value="80">
+                                    <span class="range-val" id="volumeVal">80%</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Test Audio Notification</span>
+                                    <span class="row-desc">Play a quick cyber beep sound check.</span>
+                                </div>
+                                <button class="settings-btn secondary-btn" id="testSoundBtn">🔊 Play Test Beep</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Tab -->
+                    <div class="settings-tab-panel hide" id="tab-about">
+                        <div class="panel-header">
+                            <h2>ℹ️ System Information</h2>
+                            <p>Specifications and details about your Arachne OS environment.</p>
+                        </div>
+
+                        <div class="settings-card about-hero">
+                            <div class="about-logo">🕷️</div>
+                            <h3>Arachne-OS v2.5</h3>
+                            <p class="about-tagline">Cyber Spider Edition • Web Desktop Platform</p>
+
+                            <div class="specs-grid">
+                                <div class="spec-box">
+                                    <span class="spec-label">System Kernel</span>
+                                    <span class="spec-val">Arachne WebKernel 24.12</span>
+                                </div>
+                                <div class="spec-box">
+                                    <span class="spec-label">Processor</span>
+                                    <span class="spec-val">Spider-Core Quantum 8-Core</span>
+                                </div>
+                                <div class="spec-box">
+                                    <span class="spec-label">Memory (RAM)</span>
+                                    <span class="spec-val">32 GB Cyber DDR5</span>
+                                </div>
+                                <div class="spec-box">
+                                    <span class="spec-label">Graphics (GPU)</span>
+                                    <span class="spec-val">Venom RTX Cyber GL</span>
+                                </div>
+                            </div>
+
+                            <div class="reset-section">
+                                <button class="settings-btn danger-btn" id="resetSettingsBtn">🔄 Reset Settings to Default</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification Popup -->
+        <div class="settings-toast hide" id="settingsToast">
+            <span class="toast-icon">✨</span>
+            <span class="toast-msg" id="toastMsg">Wallpaper updated!</span>
         </div>
 
     </div>

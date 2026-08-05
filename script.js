@@ -1251,5 +1251,407 @@ function updateFilesStatusBar(totalItems) {
     filesSelectionCount.textContent = `${selectedFileNames.size} selected`;
 }
 
+// -------------------------------------------------------------
+// Settings Application & Wallpaper Management Module
+// -------------------------------------------------------------
 
+const settingsWindow = document.getElementById("settingsWindow");
+const settingsHeader = document.getElementById("settingsHeader");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const minSettingsBtn = document.getElementById("minSettingsBtn");
+const maxSettingsBtn = document.getElementById("maxSettingsBtn");
+const settingsAppBtns = document.querySelectorAll(".settings-app-btn");
 
+const settingsNavItems = document.querySelectorAll(".settings-nav-item");
+const settingsTabPanels = document.querySelectorAll(".settings-tab-panel");
+
+// Preview Elements
+const miniDesktopScreen = document.getElementById("miniDesktopScreen");
+const miniScreenLabel = document.getElementById("miniScreenLabel");
+const activeDesktopName = document.getElementById("activeDesktopName");
+const activeLockName = document.getElementById("activeLockName");
+const previewLockscreenBtn = document.getElementById("previewLockscreenBtn");
+
+// Controls & Custom Options
+const wallpaperGrid = document.getElementById("wallpaperGrid");
+const wallpaperFitSelect = document.getElementById("wallpaperFitSelect");
+const customWallpaperFile = document.getElementById("customWallpaperFile");
+const browseFileBtn = document.getElementById("browseFileBtn");
+const customWallpaperUrl = document.getElementById("customWallpaperUrl");
+const applyCustomUrlBtn = document.getElementById("applyCustomUrlBtn");
+
+const brightnessRange = document.getElementById("brightnessRange");
+const brightnessVal = document.getElementById("brightnessVal");
+const contrastRange = document.getElementById("contrastRange");
+const contrastVal = document.getElementById("contrastVal");
+const glassBlurToggle = document.getElementById("glassBlurToggle");
+
+const soundEffectsToggle = document.getElementById("soundEffectsToggle");
+const volumeRange = document.getElementById("volumeRange");
+const volumeVal = document.getElementById("volumeVal");
+const testSoundBtn = document.getElementById("testSoundBtn");
+
+const resetSettingsBtn = document.getElementById("resetSettingsBtn");
+const settingsToast = document.getElementById("settingsToast");
+const toastMsg = document.getElementById("toastMsg");
+
+// Default Wallpapers Metadata
+const wallpaperCatalog = [
+    { url: "./images/spider-man-logo-10k-3840x2160-15274.png", name: "Spider-Man Logo 10K" },
+    { url: "./images/spider-man-across-3840x2160-11476.png", name: "Across Spider-Verse" },
+    { url: "./images/wallpaper1.jfif", name: "Cyber Web Matrix" },
+    { url: "./images/wallpaper2.jfif", name: "Neon Red Cyber Grid" },
+    { url: "./images/wallpaper3.jfif", name: "Arachne Webweave" }
+];
+
+// OS Wallpaper State with LocalStorage Persistence
+let currentDesktopWallpaper = localStorage.getItem("arachne_desktop_wallpaper") || "./images/spider-man-logo-10k-3840x2160-15274.png";
+let currentDesktopName = localStorage.getItem("arachne_desktop_name") || "Spider-Man Logo 10K";
+
+let currentLockWallpaper = localStorage.getItem("arachne_lock_wallpaper") || "./images/spider-man-across-3840x2160-11476.png";
+let currentLockName = localStorage.getItem("arachne_lock_name") || "Across Spider-Verse";
+
+let currentWallpaperFit = localStorage.getItem("arachne_wallpaper_fit") || "cover";
+
+// Open Settings Application
+settingsAppBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        settingsWindow.classList.remove("hide");
+        appBox.classList.add("hide"); // Auto-close start menu
+        bringToFront(settingsWindow);
+    });
+});
+
+settingsWindow.addEventListener("mousedown", () => {
+    bringToFront(settingsWindow);
+});
+
+makeDraggable(settingsWindow, settingsHeader);
+
+// Window Controls
+closeSettingsBtn.addEventListener("click", () => {
+    settingsWindow.classList.add("hide");
+});
+
+minSettingsBtn.addEventListener("click", () => {
+    settingsWindow.classList.add("hide");
+});
+
+let isSettingsMaximized = false;
+maxSettingsBtn.addEventListener("click", () => {
+    isSettingsMaximized = !isSettingsMaximized;
+    if (isSettingsMaximized) {
+        settingsWindow.classList.add("maximized");
+        maxSettingsBtn.textContent = "❐";
+    } else {
+        settingsWindow.classList.remove("maximized");
+        maxSettingsBtn.textContent = "□";
+    }
+});
+
+// Sidebar Navigation Tabs
+settingsNavItems.forEach(item => {
+    item.addEventListener("click", () => {
+        const targetTab = item.getAttribute("data-tab");
+        
+        settingsNavItems.forEach(nav => nav.classList.remove("active"));
+        settingsTabPanels.forEach(panel => panel.classList.add("hide"));
+        
+        item.classList.add("active");
+        const activePanel = document.getElementById(`tab-${targetTab}`);
+        if (activePanel) activePanel.classList.remove("hide");
+    });
+});
+
+// Toast Notification Engine
+let toastTimeout = null;
+function showToast(message, icon = "✨") {
+    if (!settingsToast) return;
+    toastMsg.textContent = message;
+    settingsToast.querySelector(".toast-icon").textContent = icon;
+    
+    settingsToast.classList.remove("hide");
+    
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+        settingsToast.classList.add("hide");
+    }, 3200);
+}
+
+// Play Cyber Beep Sound
+function playCyberBeep() {
+    if (soundEffectsToggle && !soundEffectsToggle.checked) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const vol = (parseInt(volumeRange.value, 10) || 80) / 100 * 0.15;
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+    } catch (e) {
+        console.warn("Audio Context error:", e);
+    }
+}
+
+if (testSoundBtn) {
+    testSoundBtn.addEventListener("click", () => {
+        playCyberBeep();
+        showToast("🔊 Testing Arachne OS Audio Beep", "🔊");
+    });
+}
+
+// Initialize Wallpaper & UI State
+function applyDesktopWallpaper(url, name = "Custom Wallpaper") {
+    currentDesktopWallpaper = url;
+    currentDesktopName = name;
+    
+    localStorage.setItem("arachne_desktop_wallpaper", url);
+    localStorage.setItem("arachne_desktop_name", name);
+    
+    if (mainScreen) {
+        mainScreen.style.backgroundImage = `url("${url}")`;
+        mainScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    
+    if (miniDesktopScreen) {
+        miniDesktopScreen.style.backgroundImage = `url("${url}")`;
+        miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    
+    if (miniScreenLabel) miniScreenLabel.textContent = name;
+    if (activeDesktopName) activeDesktopName.textContent = name;
+    
+    updateWallpaperGalleryBadges();
+    showToast(`Desktop Wallpaper updated to "${name}"!`, "🎨");
+    playCyberBeep();
+}
+
+function applyLockWallpaper(url, name = "Custom Lock Screen") {
+    currentLockWallpaper = url;
+    currentLockName = name;
+    
+    localStorage.setItem("arachne_lock_wallpaper", url);
+    localStorage.setItem("arachne_lock_name", name);
+    
+    if (lockScreen) {
+        lockScreen.style.backgroundImage = `url("${url}")`;
+    }
+    
+    if (activeLockName) activeLockName.textContent = name;
+    
+    updateWallpaperGalleryBadges();
+    showToast(`Lock Screen Wallpaper updated to "${name}"!`, "🔒");
+    playCyberBeep();
+}
+
+function updateWallpaperGalleryBadges() {
+    const cards = document.querySelectorAll(".wallpaper-card");
+    cards.forEach(card => {
+        const cardUrl = card.getAttribute("data-url");
+        
+        // Remove existing badges inside thumb
+        const wrapper = card.querySelector(".wallpaper-thumb-wrapper");
+        if (wrapper) {
+            const oldBadges = wrapper.querySelectorAll(".wallpaper-badge");
+            oldBadges.forEach(b => b.remove());
+            
+            if (cardUrl === currentDesktopWallpaper) {
+                const badge = document.createElement("span");
+                badge.className = "wallpaper-badge desktop-badge";
+                badge.textContent = "DESKTOP";
+                wrapper.appendChild(badge);
+                card.classList.add("active-desktop");
+            } else {
+                card.classList.remove("active-desktop");
+            }
+            
+            if (cardUrl === currentLockWallpaper) {
+                const badge = document.createElement("span");
+                badge.className = "wallpaper-badge lock-badge";
+                badge.textContent = "LOCK SCREEN";
+                wrapper.appendChild(badge);
+                card.classList.add("active-lock");
+            } else {
+                card.classList.remove("active-lock");
+            }
+        }
+    });
+}
+
+function initOSWallpapers() {
+    if (mainScreen) {
+        mainScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
+        mainScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    if (lockScreen) {
+        lockScreen.style.backgroundImage = `url("${currentLockWallpaper}")`;
+    }
+    if (miniDesktopScreen) {
+        miniDesktopScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
+        miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    if (miniScreenLabel) miniScreenLabel.textContent = currentDesktopName;
+    if (activeDesktopName) activeDesktopName.textContent = currentDesktopName;
+    if (activeLockName) activeLockName.textContent = currentLockName;
+    if (wallpaperFitSelect) wallpaperFitSelect.value = currentWallpaperFit;
+    
+    updateWallpaperGalleryBadges();
+}
+
+// Bind Gallery Buttons
+if (wallpaperGrid) {
+    wallpaperGrid.addEventListener("click", (e) => {
+        const desktopBtn = e.target.closest(".apply-desktop-btn");
+        const lockBtn = e.target.closest(".apply-lock-btn");
+        const card = e.target.closest(".wallpaper-card");
+        
+        if (desktopBtn) {
+            e.stopPropagation();
+            const url = desktopBtn.getAttribute("data-url");
+            const name = desktopBtn.getAttribute("data-name");
+            applyDesktopWallpaper(url, name);
+        } else if (lockBtn) {
+            e.stopPropagation();
+            const url = lockBtn.getAttribute("data-url");
+            const name = lockBtn.getAttribute("data-name");
+            applyLockWallpaper(url, name);
+        } else if (card) {
+            const url = card.getAttribute("data-url");
+            const name = card.getAttribute("data-name");
+            applyDesktopWallpaper(url, name);
+        }
+    });
+}
+
+// Wallpaper Fit Mode Selector
+if (wallpaperFitSelect) {
+    wallpaperFitSelect.addEventListener("change", (e) => {
+        currentWallpaperFit = e.target.value;
+        localStorage.setItem("arachne_wallpaper_fit", currentWallpaperFit);
+        if (mainScreen) mainScreen.style.backgroundSize = currentWallpaperFit;
+        if (miniDesktopScreen) miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
+        showToast(`Wallpaper scaling set to "${currentWallpaperFit}"`, "🖼️");
+    });
+}
+
+// Preview Lock Screen Button
+if (previewLockscreenBtn) {
+    previewLockscreenBtn.addEventListener("click", () => {
+        mainScreen.classList.add("hide");
+        lockScreen.classList.remove("hide");
+        showToast("Lock Screen preview active. Click Unlock to return.", "👁️");
+    });
+}
+
+// Browse Custom File Upload
+if (browseFileBtn && customWallpaperFile) {
+    browseFileBtn.addEventListener("click", () => {
+        customWallpaperFile.click();
+    });
+    
+    customWallpaperFile.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const dataUrl = event.target.result;
+                applyDesktopWallpaper(dataUrl, file.name);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Apply Custom URL
+if (applyCustomUrlBtn && customWallpaperUrl) {
+    applyCustomUrlBtn.addEventListener("click", () => {
+        const url = customWallpaperUrl.value.trim();
+        if (url) {
+            applyDesktopWallpaper(url, "Web URL Wallpaper");
+            customWallpaperUrl.value = "";
+        } else {
+            showToast("Please enter a valid image URL!", "⚠️");
+        }
+    });
+}
+
+// Display Brightness & Contrast Controls
+function updateDisplayFilters() {
+    const bright = brightnessRange ? brightnessRange.value : 100;
+    const contrast = contrastRange ? contrastRange.value : 100;
+    
+    if (brightnessVal) brightnessVal.textContent = `${bright}%`;
+    if (contrastVal) contrastVal.textContent = `${contrast}%`;
+    
+    if (mainScreen) {
+        mainScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
+    }
+    if (miniDesktopScreen) {
+        miniDesktopScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
+    }
+}
+
+if (brightnessRange) brightnessRange.addEventListener("input", updateDisplayFilters);
+if (contrastRange) contrastRange.addEventListener("input", updateDisplayFilters);
+
+// Volume Range Display
+if (volumeRange && volumeVal) {
+    volumeRange.addEventListener("input", () => {
+        volumeVal.textContent = `${volumeRange.value}%`;
+    });
+}
+
+// Glass Blur Toggle
+if (glassBlurToggle) {
+    glassBlurToggle.addEventListener("change", (e) => {
+        const windows = document.querySelectorAll(".window");
+        windows.forEach(w => {
+            if (e.target.checked) {
+                w.style.backdropFilter = "blur(20px)";
+            } else {
+                w.style.backdropFilter = "none";
+            }
+        });
+        showToast(e.target.checked ? "Glassmorphism blur enabled" : "Glassmorphism blur disabled", "✨");
+    });
+}
+
+// Reset Settings Button
+if (resetSettingsBtn) {
+    resetSettingsBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset all settings and wallpapers to default?")) {
+            localStorage.removeItem("arachne_desktop_wallpaper");
+            localStorage.removeItem("arachne_desktop_name");
+            localStorage.removeItem("arachne_lock_wallpaper");
+            localStorage.removeItem("arachne_lock_name");
+            localStorage.removeItem("arachne_wallpaper_fit");
+            
+            currentDesktopWallpaper = "./images/spider-man-logo-10k-3840x2160-15274.png";
+            currentDesktopName = "Spider-Man Logo 10K";
+            currentLockWallpaper = "./images/spider-man-across-3840x2160-11476.png";
+            currentLockName = "Across Spider-Verse";
+            currentWallpaperFit = "cover";
+            
+            if (brightnessRange) brightnessRange.value = 100;
+            if (contrastRange) contrastRange.value = 100;
+            if (volumeRange) volumeRange.value = 80;
+            updateDisplayFilters();
+            
+            initOSWallpapers();
+            showToast("Settings reset to factory defaults!", "🔄");
+        }
+    });
+}
+
+// Execute OS Wallpaper Initialization
+initOSWallpapers();
