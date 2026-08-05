@@ -2108,20 +2108,17 @@ async function fetchLiveWeather() {
 
 if (refreshWeatherBtn) {
     refreshWeatherBtn.addEventListener("click", () => {
-        currentWeatherIndex = (currentWeatherIndex + 1) % weatherPresets.length;
-        const currentData = weatherPresets[currentWeatherIndex];
-        updateWeatherUI(currentData);
-        showToast(`Weather location updated to ${currentData.city}!`, "🌤️");
-        playCyberBeep();
+        showToast(`Refreshing weather for ${currentOSUserLocationName}...`, "🌤️");
+        fetchLiveWeather();
+        if (typeof playCyberBeep === "function") playCyberBeep();
     });
 }
 
 if (headerWeatherWidget) {
     headerWeatherWidget.addEventListener("click", () => {
-        currentWeatherIndex = (currentWeatherIndex + 1) % weatherPresets.length;
-        const currentData = weatherPresets[currentWeatherIndex];
-        updateWeatherUI(currentData);
-        showToast(`Weather set to ${currentData.city} (${currentData.temp} ${currentData.desc})`, "🌡️");
+        showToast(`Refreshing weather for ${currentOSUserLocationName}...`, "🌡️");
+        fetchLiveWeather();
+        if (typeof playCyberBeep === "function") playCyberBeep();
     });
 }
 
