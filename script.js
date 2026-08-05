@@ -2024,42 +2024,86 @@ function updateWeatherUI(data) {
     if (homeWeatherDetails) homeWeatherDetails.textContent = data.details;
 }
 
-async function fetchLiveWeather() {
-    let lat = currentOSUserLat || 28.6139;
-    let lon = currentOSUserLon || 77.2090;
+async function fetchCityNameAndWeather(lat, lon) {
+    let cityName = currentOSUserLocationName;
 
+    // Reverse geocode lat/lon to real City and Country name
     try {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+        if (geoRes.ok) {
+            const geoData = await geoRes.json();
+            const city = geoData.city || geoData.locality || geoData.principalSubdivision || geoData.countryName;
+            const country = geoData.countryCode || "";
+            if (city) {
+                cityName = `${city}${country ? `, ${country}` : ''}`;
+                currentOSUserLocationName = cityName;
+                localStorage.setItem("arachne_user_location_name", cityName);
+            }
+        }
+    } catch (err) {
+        console.warn("Reverse geocode fetch warning:", err);
+    }
+
+    // Fetch Open-Meteo Weather for exact lat/lon
+    try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m`);
         if (res.ok) {
             const data = await res.json();
             const temp = Math.round(data.current_weather.temperature);
             const code = data.current_weather.weathercode;
             const wind = Math.round(data.current_weather.windspeed);
+            const humidity = (data.hourly && data.hourly.relativehumidity_2m && data.hourly.relativehumidity_2m.length) ? data.hourly.relativehumidity_2m[0] : 60;
             
             let icon = "🌤️";
             let desc = "Partly Cloudy";
             if (code === 0) { icon = "☀️"; desc = "Clear Sky"; }
             else if (code >= 1 && code <= 3) { icon = "🌤️"; desc = "Partly Cloudy"; }
             else if (code >= 45 && code <= 48) { icon = "🌫️"; desc = "Foggy"; }
-            else if (code >= 51 && code <= 67) { icon = "🌧️"; desc = "Light Rain"; }
+            else if (code >= 51 && code <= 67) { icon = "🌧️"; desc = "Rainy"; }
+            else if (code >= 71 && code <= 77) { icon = "❄️"; desc = "Snowy"; }
             else if (code >= 95) { icon = "⛈️"; desc = "Thunderstorm"; }
             
-            const livePreset = {
-                city: currentOSUserLocationName,
+            const liveData = {
+                city: cityName,
                 temp: `${temp}°C`,
                 icon: icon,
                 desc: desc,
-                details: `📍 ${currentOSUserLocationName} • 💧 58% • 💨 ${wind} km/h`
+                details: `📍 ${cityName} • 💧 ${humidity}% • 💨 ${wind} km/h`
             };
-            
-            updateWeatherUI(livePreset);
+
+            updateWeatherUI(liveData);
+            updateLocationStatusUI();
+            updateRealTimeClock();
             return;
         }
     } catch (e) {
-        // Fallback to presets
+        console.warn("Live weather fetch error:", e);
     }
-    
+
     updateWeatherUI(weatherPresets[currentWeatherIndex]);
+}
+
+async function fetchLiveWeather() {
+    if (navigator.geolocation && !localStorage.getItem("arachne_user_lat")) {
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                currentOSUserLat = lat;
+                currentOSUserLon = lon;
+                localStorage.setItem("arachne_user_lat", lat);
+                localStorage.setItem("arachne_user_lon", lon);
+                await fetchCityNameAndWeather(lat, lon);
+            },
+            (err) => {
+                console.warn("Auto-geolocation popup closed or denied:", err);
+                fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
+            },
+            { timeout: 10000 }
+        );
+    } else {
+        fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
+    }
 }
 
 if (refreshWeatherBtn) {
