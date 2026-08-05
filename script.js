@@ -1678,7 +1678,7 @@ const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn
 const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
 const standaloneFullscreenBtn = document.getElementById("fullscreenBtn");
 
-// Weather Elements
+// Weather & Location Elements
 const weatherIcon = document.getElementById("weatherIcon");
 const weatherTemp = document.getElementById("weatherTemp");
 const weatherCity = document.getElementById("weatherCity");
@@ -1692,40 +1692,100 @@ const refreshWeatherBtn = document.getElementById("refreshWeatherBtn");
 const headerWeatherWidget = document.getElementById("headerWeatherWidget");
 const homeWeatherCard = document.getElementById("homeWeatherCard");
 
+// Location & TimeZone State with LocalStorage
+let currentOSUserTimeZone = localStorage.getItem("arachne_user_timezone") || "auto";
+let currentOSUserLocationName = localStorage.getItem("arachne_user_location_name") || "Auto (Local Browser)";
+let currentOSUserLat = localStorage.getItem("arachne_user_lat") ? parseFloat(localStorage.getItem("arachne_user_lat")) : null;
+let currentOSUserLon = localStorage.getItem("arachne_user_lon") ? parseFloat(localStorage.getItem("arachne_user_lon")) : null;
+
+const detectLocationBtn = document.getElementById("detectLocationBtn");
+const timezonePresetSelect = document.getElementById("timezonePresetSelect");
+const locationStatusTitle = document.getElementById("locationStatusTitle");
+const locationStatusSub = document.getElementById("locationStatusSub");
+
+const cityPresetCoordinates = {
+    "auto": { lat: 28.6139, lon: 77.2090, name: "Auto (Local Browser)" },
+    "Asia/Kolkata": { lat: 28.6139, lon: 77.2090, name: "New Delhi, India" },
+    "America/New_York": { lat: 40.7128, lon: -74.0060, name: "New York, USA" },
+    "America/Los_Angeles": { lat: 34.0522, lon: -118.2437, name: "Los Angeles, USA" },
+    "Europe/London": { lat: 51.5074, lon: -0.1278, name: "London, UK" },
+    "Europe/Paris": { lat: 48.8566, lon: 2.3522, name: "Paris, France" },
+    "Asia/Tokyo": { lat: 35.6762, lon: 139.6503, name: "Tokyo, Japan" },
+    "Asia/Dubai": { lat: 25.2048, lon: 55.2708, name: "Dubai, UAE" },
+    "Australia/Sydney": { lat: -33.8688, lon: 151.2093, name: "Sydney, Australia" }
+};
+
+function updateLocationStatusUI() {
+    if (locationStatusTitle) {
+        locationStatusTitle.textContent = `Current Active Location: ${currentOSUserLocationName}`;
+    }
+    if (locationStatusSub) {
+        const tzText = currentOSUserTimeZone === "auto" ? "Auto-Detected (Local)" : currentOSUserTimeZone;
+        locationStatusSub.textContent = `Time Zone: ${tzText} • Lat/Lon: ${currentOSUserLat ? `${currentOSUserLat.toFixed(2)}°, ${currentOSUserLon.toFixed(2)}°` : 'Default'}`;
+    }
+    if (timezonePresetSelect) {
+        timezonePresetSelect.value = currentOSUserTimeZone;
+    }
+}
+
 // Real-Time Clock Update Function
 function updateRealTimeClock() {
     const now = new Date();
     
-    // Format Time (12-hour format with seconds & AM/PM)
-    let hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    
-    hours = hours % 12;
-    hours = hours ? hours : 12; // 0 becomes 12
-    const formattedHours = String(hours).padStart(2, "0");
-    
-    const fullTimeString = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
-    
-    // Format Date: Wednesday, August 5, 2026
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
-    const dayName = days[now.getDay()];
-    const shortDayName = dayName.substring(0, 3);
-    const monthName = months[now.getMonth()];
-    const shortMonthName = shortMonths[now.getMonth()];
-    const dayDate = now.getDate();
-    const year = now.getFullYear();
-    
-    const fullDateString = `${dayName}, ${monthName} ${dayDate}, ${year}`;
-    const shortDateString = `${shortDayName}, ${shortMonthName} ${dayDate}, ${year}`;
+    let timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    };
+    if (currentOSUserTimeZone && currentOSUserTimeZone !== "auto") {
+        timeOptions.timeZone = currentOSUserTimeZone;
+    }
+
+    let fullTimeString = "";
+    try {
+        fullTimeString = now.toLocaleTimeString('en-US', timeOptions);
+    } catch (e) {
+        fullTimeString = now.toLocaleTimeString('en-US');
+    }
+
+    let dateOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    if (currentOSUserTimeZone && currentOSUserTimeZone !== "auto") {
+        dateOptions.timeZone = currentOSUserTimeZone;
+    }
+
+    let fullDateString = "";
+    try {
+        fullDateString = now.toLocaleDateString('en-US', dateOptions);
+    } catch (e) {
+        fullDateString = now.toLocaleDateString('en-US');
+    }
+
+    let shortDateOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    };
+    if (currentOSUserTimeZone && currentOSUserTimeZone !== "auto") {
+        shortDateOptions.timeZone = currentOSUserTimeZone;
+    }
+
+    let shortDateString = "";
+    try {
+        shortDateString = now.toLocaleDateString('en-US', shortDateOptions);
+    } catch (e) {
+        shortDateString = now.toLocaleDateString('en-US');
+    }
     
     // Update Lock Screen Clock
     if (lockTimeEl) lockTimeEl.textContent = fullTimeString;
-    if (lockDateEl) lockDateEl.textContent = fullDateString;
+    if (lockDateEl) lockDateEl.textContent = `${fullDateString} (${currentOSUserLocationName})`;
     
     // Update Desktop Header Clock
     if (desktopTimeEl) desktopTimeEl.textContent = fullTimeString;
@@ -1733,12 +1793,88 @@ function updateRealTimeClock() {
     
     // Update Home Screen Widget Clock
     if (homeClockTimeEl) homeClockTimeEl.textContent = fullTimeString;
-    if (homeClockDateEl) homeClockDateEl.textContent = fullDateString;
+    if (homeClockDateEl) homeClockDateEl.textContent = `${fullDateString} • 📍 ${currentOSUserLocationName}`;
 }
 
 // Start Real-Time Clock Interval (Updates every 1000ms)
 setInterval(updateRealTimeClock, 1000);
 updateRealTimeClock();
+
+// Geolocation & Timezone Selection Event Listeners
+if (detectLocationBtn) {
+    detectLocationBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            showToast("Geolocation is not supported by your browser", "⚠️");
+            return;
+        }
+
+        showToast("Requesting device location access...", "📍");
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                currentOSUserLat = lat;
+                currentOSUserLon = lon;
+                
+                try {
+                    const geoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                    if (geoRes.ok) {
+                        const geoData = await geoRes.json();
+                        const tz = geoData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "auto";
+                        currentOSUserTimeZone = tz;
+                        currentOSUserLocationName = `GPS Location (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`;
+                    }
+                } catch (err) {
+                    currentOSUserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "auto";
+                    currentOSUserLocationName = `GPS Location`;
+                }
+
+                localStorage.setItem("arachne_user_timezone", currentOSUserTimeZone);
+                localStorage.setItem("arachne_user_location_name", currentOSUserLocationName);
+                localStorage.setItem("arachne_user_lat", lat);
+                localStorage.setItem("arachne_user_lon", lon);
+
+                updateLocationStatusUI();
+                updateRealTimeClock();
+                fetchLiveWeather();
+                showToast(`Location set to ${currentOSUserLocationName}!`, "📍");
+            },
+            (err) => {
+                console.warn("Geolocation error:", err);
+                showToast("Geolocation permission denied or unavailable", "⚠️");
+            }
+        );
+    });
+}
+
+if (timezonePresetSelect) {
+    timezonePresetSelect.value = currentOSUserTimeZone;
+    timezonePresetSelect.addEventListener("change", (e) => {
+        const val = e.target.value;
+        currentOSUserTimeZone = val;
+        
+        if (cityPresetCoordinates[val]) {
+            const preset = cityPresetCoordinates[val];
+            currentOSUserLocationName = preset.name;
+            currentOSUserLat = preset.lat;
+            currentOSUserLon = preset.lon;
+        } else {
+            currentOSUserLocationName = val;
+        }
+
+        localStorage.setItem("arachne_user_timezone", currentOSUserTimeZone);
+        localStorage.setItem("arachne_user_location_name", currentOSUserLocationName);
+        if (currentOSUserLat) localStorage.setItem("arachne_user_lat", currentOSUserLat);
+        if (currentOSUserLon) localStorage.setItem("arachne_user_lon", currentOSUserLon);
+
+        updateLocationStatusUI();
+        updateRealTimeClock();
+        fetchLiveWeather();
+        showToast(`Timezone updated to ${currentOSUserLocationName}`, "🌍");
+    });
+}
+
+updateLocationStatusUI();
 
 // Fullscreen Control Logic & Cross-Browser Engine
 function enterOSFullScreen() {
@@ -1889,8 +2025,11 @@ function updateWeatherUI(data) {
 }
 
 async function fetchLiveWeather() {
+    let lat = currentOSUserLat || 28.6139;
+    let lon = currentOSUserLon || 77.2090;
+
     try {
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current_weather=true");
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         if (res.ok) {
             const data = await res.json();
             const temp = Math.round(data.current_weather.temperature);
@@ -1906,11 +2045,11 @@ async function fetchLiveWeather() {
             else if (code >= 95) { icon = "⛈️"; desc = "Thunderstorm"; }
             
             const livePreset = {
-                city: "Cyber City",
+                city: currentOSUserLocationName,
                 temp: `${temp}°C`,
                 icon: icon,
                 desc: desc,
-                details: `📍 Cyber City • 💧 58% • 💨 ${wind} km/h`
+                details: `📍 ${currentOSUserLocationName} • 💧 58% • 💨 ${wind} km/h`
             };
             
             updateWeatherUI(livePreset);

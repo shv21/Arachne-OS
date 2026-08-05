@@ -534,6 +534,9 @@
                     <div class="settings-nav-item" data-tab="sound">
                         <span class="nav-icon">🔔</span> Sound & Audio
                     </div>
+                    <div class="settings-nav-item" data-tab="time-location">
+                        <span class="nav-icon">🌍</span> Time & Location
+                    </div>
                     <div class="settings-nav-item" data-tab="about">
                         <span class="nav-icon">ℹ️</span> System & About
                     </div>
@@ -808,6 +811,59 @@
                                     <span class="row-desc">Play a quick cyber beep sound check.</span>
                                 </div>
                                 <button class="settings-btn secondary-btn" id="testSoundBtn">🔊 Play Test Beep</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time & Location Tab -->
+                    <div class="settings-tab-panel hide" id="tab-time-location">
+                        <div class="panel-header">
+                            <h2>🌍 Time, Date & Location Settings</h2>
+                            <p>Set your geographic location to automatically update real-time clock, date, and live weather.</p>
+                        </div>
+
+                        <!-- Auto Location Detection Card -->
+                        <div class="settings-card">
+                            <div class="card-section-title">Automatic Location & Time Zone Detection</div>
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Use GPS / Device Location</span>
+                                    <span class="row-desc">Automatically detect your current city, time zone, and live weather using device location.</span>
+                                </div>
+                                <div class="row-action">
+                                    <button class="settings-btn primary-btn" id="detectLocationBtn">📍 Detect My Location</button>
+                                </div>
+                            </div>
+                            <div class="location-status-box" id="locationStatusBox" style="margin-top: 15px; padding: 12px; background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.2); border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+                                <span class="status-icon" style="font-size: 24px;">🌐</span>
+                                <div class="status-details">
+                                    <div class="status-title" id="locationStatusTitle" style="color: #00e5ff; font-weight: bold; font-size: 14px;">Current Active Location: Auto (Local Browser)</div>
+                                    <div class="status-sub" id="locationStatusSub" style="color: #a0a0b0; font-size: 12px;">Time Zone: Auto-Detected • Lat/Lon: Local</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manual Location & Timezone Selection Card -->
+                        <div class="settings-card">
+                            <div class="card-section-title">Manual Region & Timezone Preset</div>
+                            <div class="setting-row">
+                                <div class="row-info">
+                                    <span class="row-label">Select City / Time Zone</span>
+                                    <span class="row-desc">Choose a global city to sync clock and weather for that specific region.</span>
+                                </div>
+                                <div class="row-action">
+                                    <select class="settings-select" id="timezonePresetSelect" style="background: rgba(15,20,30,0.8); color: #00e5ff; border: 1px solid rgba(0,229,255,0.3); padding: 8px 12px; border-radius: 6px; outline: none; cursor: pointer;">
+                                        <option value="auto">🌐 Auto (Local Browser Default)</option>
+                                        <option value="Asia/Kolkata">🇮🇳 New Delhi / India (IST - UTC+5:30)</option>
+                                        <option value="America/New_York">🇺🇸 New York, USA (EST/EDT - UTC-5:00)</option>
+                                        <option value="America/Los_Angeles">🇺🇸 Los Angeles, USA (PST/PDT - UTC-8:00)</option>
+                                        <option value="Europe/London">🇬🇧 London, UK (GMT/BST - UTC+0:00)</option>
+                                        <option value="Europe/Paris">🇫🇷 Paris, France (CET/CEST - UTC+1:00)</option>
+                                        <option value="Asia/Tokyo">🇯🇵 Tokyo, Japan (JST - UTC+9:00)</option>
+                                        <option value="Asia/Dubai">🇦🇪 Dubai, UAE (GST - UTC+4:00)</option>
+                                        <option value="Australia/Sydney">🇦🇺 Sydney, Australia (AEST/AEDT - UTC+10:00)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
