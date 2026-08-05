@@ -10,14 +10,91 @@
 
 <body>
 
-    <div class="descktop-lockScreen ">
-        <div class="overlay">
-            <!-- <h1>hii dude</h1> -->
+    <div class="descktop-lockScreen">
+        <div class="overlay"></div>
+
+        <div class="lock-screen-content">
+            <!-- Real-Time Clock on Lock Screen -->
+            <div class="lock-clock-container">
+                <div class="lock-time" id="lockTime">00:00:00 AM</div>
+                <div class="lock-date" id="lockDate">Wednesday, August 5, 2026</div>
+            </div>
+
+            <!-- Lock Screen System Notification Banner -->
+            <div class="lock-notification-card">
+                <div class="lock-notif-header">
+                    <span class="notif-badge">🔔 SYSTEM NOTICE</span>
+                    <span class="notif-time">Just now</span>
+                </div>
+                <div class="lock-notif-body">
+                    <p class="lock-notif-msg">For full view of OS switch to full screen</p>
+                </div>
+                <div class="lock-notif-actions">
+                    <button class="fullscreen-btn" id="lockScreenFullscreenBtn">📺 Switch to Full Screen</button>
+                </div>
+            </div>
+
+            <!-- Lock Screen Action Controls -->
+            <div class="lock-actions">
+                <button class="login-btn">Unlock OS</button>
+            </div>
         </div>
-        <button class="login-btn">Unlock OS</button>
     </div>
 
     <div class="descktop-main-screen hide">
+
+        <!-- Home Screen Real-Time Clock & Weather Top Status Bar -->
+        <div class="desktop-header-bar">
+            <div class="header-left">
+                <span class="brand-icon">🕷️</span>
+                <span class="brand-name">Arachne OS</span>
+                <span class="system-status-dot" title="System Online"></span>
+            </div>
+
+            <!-- Live Weather Header Widget -->
+            <div class="header-weather-widget" id="headerWeatherWidget">
+                <span class="weather-icon" id="weatherIcon">🌤️</span>
+                <div class="weather-text-group">
+                    <div class="weather-temp-location">
+                        <span class="weather-temp" id="weatherTemp">28°C</span>
+                        <span class="weather-city" id="weatherCity">Cyber City</span>
+                    </div>
+                    <div class="weather-cond" id="weatherCond">Partly Cloudy</div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Real-Time Clock Widget -->
+                <div class="header-clock-widget">
+                    <div class="desktop-time" id="desktopTime">00:00:00 AM</div>
+                    <div class="desktop-date" id="desktopDate">Wed, Aug 5, 2026</div>
+                </div>
+                <button class="header-fs-btn" id="desktopFullscreenBtn" title="Toggle Full Screen">📺 Fullscreen</button>
+            </div>
+        </div>
+
+        <!-- Desktop Home Screen Floating Widgets -->
+        <div class="desktop-widget-panel">
+            <div class="widget-card clock-card">
+                <div class="clock-icon">🕒</div>
+                <div class="clock-display">
+                    <div class="clock-main-time" id="homeClockTime">00:00:00 AM</div>
+                    <div class="clock-sub-date" id="homeClockDate">Wednesday, August 5, 2026</div>
+                </div>
+            </div>
+
+            <div class="widget-card weather-card" id="homeWeatherCard">
+                <div class="weather-card-top">
+                    <span class="weather-card-icon" id="homeWeatherIcon">🌤️</span>
+                    <button class="weather-refresh-btn" id="refreshWeatherBtn" title="Refresh Weather">↻</button>
+                </div>
+                <div class="weather-card-info">
+                    <div class="weather-card-temp" id="homeWeatherTemp">28°C</div>
+                    <div class="weather-card-desc" id="homeWeatherDesc">Partly Cloudy</div>
+                    <div class="weather-card-details" id="homeWeatherDetails">📍 Cyber City • 💧 58% • 💨 12 km/h</div>
+                </div>
+            </div>
+        </div>
 
         <div class="sidebar">
 

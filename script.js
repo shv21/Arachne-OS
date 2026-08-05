@@ -1648,6 +1648,200 @@ if (resetSettingsBtn) {
             updateDisplayFilters();
             
             initOSWallpapers();
+function updateWallpaperGalleryBadges() {
+    const cards = document.querySelectorAll(".wallpaper-card");
+    cards.forEach(card => {
+        const cardUrl = card.getAttribute("data-url");
+        
+        // Remove existing badges inside thumb
+        const wrapper = card.querySelector(".wallpaper-thumb-wrapper");
+        if (wrapper) {
+            const oldBadges = wrapper.querySelectorAll(".wallpaper-badge");
+            oldBadges.forEach(b => b.remove());
+            
+            if (cardUrl === currentDesktopWallpaper) {
+                const badge = document.createElement("span");
+                badge.className = "wallpaper-badge desktop-badge";
+                badge.textContent = "DESKTOP";
+                wrapper.appendChild(badge);
+                card.classList.add("active-desktop");
+            } else {
+                card.classList.remove("active-desktop");
+            }
+            
+            if (cardUrl === currentLockWallpaper) {
+                const badge = document.createElement("span");
+                badge.className = "wallpaper-badge lock-badge";
+                badge.textContent = "LOCK SCREEN";
+                wrapper.appendChild(badge);
+                card.classList.add("active-lock");
+            } else {
+                card.classList.remove("active-lock");
+            }
+        }
+    });
+}
+
+function initOSWallpapers() {
+    if (mainScreen) {
+        mainScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
+        mainScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    if (lockScreen) {
+        lockScreen.style.backgroundImage = `url("${currentLockWallpaper}")`;
+    }
+    if (miniDesktopScreen) {
+        miniDesktopScreen.style.backgroundImage = `url("${currentDesktopWallpaper}")`;
+        miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
+    }
+    if (miniScreenLabel) miniScreenLabel.textContent = currentDesktopName;
+    if (activeDesktopName) activeDesktopName.textContent = currentDesktopName;
+    if (activeLockName) activeLockName.textContent = currentLockName;
+    if (wallpaperFitSelect) wallpaperFitSelect.value = currentWallpaperFit;
+    
+    updateWallpaperGalleryBadges();
+}
+
+// Bind Gallery Buttons
+if (wallpaperGrid) {
+    wallpaperGrid.addEventListener("click", (e) => {
+        const desktopBtn = e.target.closest(".apply-desktop-btn");
+        const lockBtn = e.target.closest(".apply-lock-btn");
+        const card = e.target.closest(".wallpaper-card");
+        
+        if (desktopBtn) {
+            e.stopPropagation();
+            const url = desktopBtn.getAttribute("data-url");
+            const name = desktopBtn.getAttribute("data-name");
+            applyDesktopWallpaper(url, name);
+        } else if (lockBtn) {
+            e.stopPropagation();
+            const url = lockBtn.getAttribute("data-url");
+            const name = lockBtn.getAttribute("data-name");
+            applyLockWallpaper(url, name);
+        } else if (card) {
+            const url = card.getAttribute("data-url");
+            const name = card.getAttribute("data-name");
+            applyDesktopWallpaper(url, name);
+        }
+    });
+}
+
+// Wallpaper Fit Mode Selector
+if (wallpaperFitSelect) {
+    wallpaperFitSelect.addEventListener("change", (e) => {
+        currentWallpaperFit = e.target.value;
+        localStorage.setItem("arachne_wallpaper_fit", currentWallpaperFit);
+        if (mainScreen) mainScreen.style.backgroundSize = currentWallpaperFit;
+        if (miniDesktopScreen) miniDesktopScreen.style.backgroundSize = currentWallpaperFit;
+        showToast(`Wallpaper scaling set to "${currentWallpaperFit}"`, "🖼️");
+    });
+}
+
+// Preview Lock Screen Button
+if (previewLockscreenBtn) {
+    previewLockscreenBtn.addEventListener("click", () => {
+        mainScreen.classList.add("hide");
+        lockScreen.classList.remove("hide");
+        showToast("Lock Screen preview active. Click Unlock to return.", "👁️");
+    });
+}
+
+// Browse Custom File Upload
+if (browseFileBtn && customWallpaperFile) {
+    browseFileBtn.addEventListener("click", () => {
+        customWallpaperFile.click();
+    });
+    
+    customWallpaperFile.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const dataUrl = event.target.result;
+                applyDesktopWallpaper(dataUrl, file.name);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// Apply Custom URL
+if (applyCustomUrlBtn && customWallpaperUrl) {
+    applyCustomUrlBtn.addEventListener("click", () => {
+        const url = customWallpaperUrl.value.trim();
+        if (url) {
+            applyDesktopWallpaper(url, "Web URL Wallpaper");
+            customWallpaperUrl.value = "";
+        } else {
+            showToast("Please enter a valid image URL!", "⚠️");
+        }
+    });
+}
+
+// Display Brightness & Contrast Controls
+function updateDisplayFilters() {
+    const bright = brightnessRange ? brightnessRange.value : 100;
+    const contrast = contrastRange ? contrastRange.value : 100;
+    
+    if (brightnessVal) brightnessVal.textContent = `${bright}%`;
+    if (contrastVal) contrastVal.textContent = `${contrast}%`;
+    
+    if (mainScreen) {
+        mainScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
+    }
+    if (miniDesktopScreen) {
+        miniDesktopScreen.style.filter = `brightness(${bright}%) contrast(${contrast}%)`;
+    }
+}
+
+if (brightnessRange) brightnessRange.addEventListener("input", updateDisplayFilters);
+if (contrastRange) contrastRange.addEventListener("input", updateDisplayFilters);
+
+// Volume Range Display
+if (volumeRange && volumeVal) {
+    volumeRange.addEventListener("input", () => {
+        volumeVal.textContent = `${volumeRange.value}%`;
+    });
+}
+
+// Glass Blur Toggle
+if (glassBlurToggle) {
+    glassBlurToggle.addEventListener("change", (e) => {
+        const windows = document.querySelectorAll(".window");
+        windows.forEach(w => {
+            if (e.target.checked) {
+                w.style.backdropFilter = "blur(20px)";
+            } else {
+                w.style.backdropFilter = "none";
+            }
+        });
+        showToast(e.target.checked ? "Glassmorphism blur enabled" : "Glassmorphism blur disabled", "✨");
+    });
+}
+
+// Reset Settings Button
+if (resetSettingsBtn) {
+    resetSettingsBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset all settings and wallpapers to default?")) {
+            localStorage.removeItem("arachne_desktop_wallpaper");
+            localStorage.removeItem("arachne_desktop_name");
+            localStorage.removeItem("arachne_lock_wallpaper");
+            localStorage.removeItem("arachne_lock_name");
+            localStorage.removeItem("arachne_wallpaper_fit");
+            
+            currentDesktopWallpaper = "./images/spider-man-logo-10k-3840x2160-15274.png";
+            currentDesktopName = "Spider-Man Logo 10K";
+            currentLockWallpaper = "./images/spider-man-across-3840x2160-11476.png";
+            currentLockName = "Across Spider-Verse";
+            currentWallpaperFit = "cover";
+            
+            if (brightnessRange) brightnessRange.value = 100;
+            if (contrastRange) contrastRange.value = 100;
+            if (volumeRange) volumeRange.value = 80;
+            updateDisplayFilters();
+            
+            initOSWallpapers();
             showToast("Settings reset to factory defaults!", "🔄");
         }
     });
@@ -1655,3 +1849,200 @@ if (resetSettingsBtn) {
 
 // Execute OS Wallpaper Initialization
 initOSWallpapers();
+
+// -------------------------------------------------------------
+// Real-Time Clock, Full Screen Toggle & Live Weather Module
+// -------------------------------------------------------------
+
+// DOM Clock Elements
+const lockTimeEl = document.getElementById("lockTime");
+const lockDateEl = document.getElementById("lockDate");
+
+const desktopTimeEl = document.getElementById("desktopTime");
+const desktopDateEl = document.getElementById("desktopDate");
+
+const homeClockTimeEl = document.getElementById("homeClockTime");
+const homeClockDateEl = document.getElementById("homeClockDate");
+
+// Fullscreen Toggle Elements
+const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
+const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
+
+// Weather Elements
+const weatherIcon = document.getElementById("weatherIcon");
+const weatherTemp = document.getElementById("weatherTemp");
+const weatherCity = document.getElementById("weatherCity");
+const weatherCond = document.getElementById("weatherCond");
+
+const homeWeatherIcon = document.getElementById("homeWeatherIcon");
+const homeWeatherTemp = document.getElementById("homeWeatherTemp");
+const homeWeatherDesc = document.getElementById("homeWeatherDesc");
+const homeWeatherDetails = document.getElementById("homeWeatherDetails");
+const refreshWeatherBtn = document.getElementById("refreshWeatherBtn");
+const headerWeatherWidget = document.getElementById("headerWeatherWidget");
+const homeWeatherCard = document.getElementById("homeWeatherCard");
+
+// Real-Time Clock Update Function
+function updateRealTimeClock() {
+    const now = new Date();
+    
+    // Format Time (12-hour format with seconds & AM/PM)
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 becomes 12
+    const formattedHours = String(hours).padStart(2, "0");
+    
+    const fullTimeString = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    
+    // Format Date: Wednesday, August 5, 2026
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    const dayName = days[now.getDay()];
+    const shortDayName = dayName.substring(0, 3);
+    const monthName = months[now.getMonth()];
+    const shortMonthName = shortMonths[now.getMonth()];
+    const dayDate = now.getDate();
+    const year = now.getFullYear();
+    
+    const fullDateString = `${dayName}, ${monthName} ${dayDate}, ${year}`;
+    const shortDateString = `${shortDayName}, ${shortMonthName} ${dayDate}, ${year}`;
+    
+    // Update Lock Screen Clock
+    if (lockTimeEl) lockTimeEl.textContent = fullTimeString;
+    if (lockDateEl) lockDateEl.textContent = fullDateString;
+    
+    // Update Desktop Header Clock
+    if (desktopTimeEl) desktopTimeEl.textContent = fullTimeString;
+    if (desktopDateEl) desktopDateEl.textContent = shortDateString;
+    
+    // Update Home Screen Widget Clock
+    if (homeClockTimeEl) homeClockTimeEl.textContent = fullTimeString;
+    if (homeClockDateEl) homeClockDateEl.textContent = fullDateString;
+}
+
+// Start Real-Time Clock Interval (Updates every 1000ms)
+setInterval(updateRealTimeClock, 1000);
+updateRealTimeClock();
+
+// Fullscreen Control Logic
+function toggleOSFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(() => {
+            showToast("Entered Full Screen OS Mode!", "📺");
+        }).catch(err => {
+            showToast("Full Screen mode requested", "📺");
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => {
+                showToast("Exited Full Screen Mode", "📺");
+            });
+        }
+    }
+}
+
+function updateFullscreenButtonsUI() {
+    const isFS = !!document.fullscreenElement;
+    const btnText = isFS ? "📺 Exit Full Screen" : "📺 Switch to Full Screen";
+    const headerBtnText = isFS ? "📺 Exit FS" : "📺 Fullscreen";
+    
+    if (lockScreenFullscreenBtn) lockScreenFullscreenBtn.textContent = btnText;
+    if (desktopFullscreenBtn) desktopFullscreenBtn.textContent = headerBtnText;
+}
+
+if (lockScreenFullscreenBtn) {
+    lockScreenFullscreenBtn.addEventListener("click", toggleOSFullScreen);
+}
+
+if (desktopFullscreenBtn) {
+    desktopFullscreenBtn.addEventListener("click", toggleOSFullScreen);
+}
+
+document.addEventListener("fullscreenchange", updateFullscreenButtonsUI);
+
+// Live Weather Engine
+const weatherPresets = [
+    { city: "Cyber City", temp: "28°C", icon: "🌤️", desc: "Partly Cloudy", details: "📍 Cyber City • 💧 58% • 💨 12 km/h" },
+    { city: "New York", temp: "24°C", icon: "☀️", desc: "Sunny & Clear", details: "📍 New York • 💧 45% • 💨 9 km/h" },
+    { city: "Tokyo", temp: "26°C", icon: "🌧️", desc: "Cyber Neon Rain", details: "📍 Tokyo • 💧 82% • 💨 18 km/h" },
+    { city: "London", temp: "19°C", icon: "🌫️", desc: "Mist & Fog", details: "📍 London • 💧 75% • 💨 10 km/h" },
+    { city: "Spider Realm", temp: "31°C", icon: "⚡", desc: "Multiverse Storm", details: "📍 Spider-Verse • 💧 90% • 💨 35 km/h" }
+];
+
+let currentWeatherIndex = 0;
+
+function updateWeatherUI(data) {
+    if (weatherIcon) weatherIcon.textContent = data.icon;
+    if (weatherTemp) weatherTemp.textContent = data.temp;
+    if (weatherCity) weatherCity.textContent = data.city;
+    if (weatherCond) weatherCond.textContent = `${data.desc} • 💧 58%`;
+    
+    if (homeWeatherIcon) homeWeatherIcon.textContent = data.icon;
+    if (homeWeatherTemp) homeWeatherTemp.textContent = data.temp;
+    if (homeWeatherDesc) homeWeatherDesc.textContent = data.desc;
+    if (homeWeatherDetails) homeWeatherDetails.textContent = data.details;
+}
+
+async function fetchLiveWeather() {
+    try {
+        // Try fetching open-meteo weather API for live weather
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current_weather=true");
+        if (res.ok) {
+            const data = await res.json();
+            const temp = Math.round(data.current_weather.temperature);
+            const code = data.current_weather.weathercode;
+            const wind = Math.round(data.current_weather.windspeed);
+            
+            let icon = "🌤️";
+            let desc = "Partly Cloudy";
+            if (code === 0) { icon = "☀️"; desc = "Clear Sky"; }
+            else if (code >= 1 && code <= 3) { icon = "🌤️"; desc = "Partly Cloudy"; }
+            else if (code >= 45 && code <= 48) { icon = "🌫️"; desc = "Foggy"; }
+            else if (code >= 51 && code <= 67) { icon = "🌧️"; desc = "Light Rain"; }
+            else if (code >= 95) { icon = "⛈️"; desc = "Thunderstorm"; }
+            
+            const livePreset = {
+                city: "Cyber City",
+                temp: `${temp}°C`,
+                icon: icon,
+                desc: desc,
+                details: `📍 Cyber City • 💧 58% • 💨 ${wind} km/h`
+            };
+            
+            updateWeatherUI(livePreset);
+            return;
+        }
+    } catch (e) {
+        // Fallback to presets if offline
+    }
+    
+    updateWeatherUI(weatherPresets[currentWeatherIndex]);
+}
+
+if (refreshWeatherBtn) {
+    refreshWeatherBtn.addEventListener("click", () => {
+        currentWeatherIndex = (currentWeatherIndex + 1) % weatherPresets.length;
+        const currentData = weatherPresets[currentWeatherIndex];
+        updateWeatherUI(currentData);
+        showToast(`Weather location updated to ${currentData.city}!`, "🌤️");
+        playCyberBeep();
+    });
+}
+
+if (headerWeatherWidget) {
+    headerWeatherWidget.addEventListener("click", () => {
+        currentWeatherIndex = (currentWeatherIndex + 1) % weatherPresets.length;
+        const currentData = weatherPresets[currentWeatherIndex];
+        updateWeatherUI(currentData);
+        showToast(`Weather set to ${currentData.city} (${currentData.temp} ${currentData.desc})`, "🌡️");
+    });
+}
+
+// Initial Weather Fetch
+fetchLiveWeather();
