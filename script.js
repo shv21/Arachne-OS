@@ -1936,29 +1936,35 @@ const startFullscreenBtn = document.getElementById("startFullscreenBtn");
 const continueWindowBtn = document.getElementById("continueWindowBtn");
 
 function enterOSFullScreen() {
-    const docEl = document.documentElement || document.body;
-    let fsPromise = null;
+    // Hide initial overlay first
+    if (initialFullscreenOverlay) {
+        initialFullscreenOverlay.classList.add("hide-overlay");
+    }
 
-    document.body.classList.add("os-pseudo-fullscreen");
+    const docEl = document.documentElement;
 
     try {
         if (docEl.requestFullscreen) {
-            fsPromise = docEl.requestFullscreen();
+            const p = docEl.requestFullscreen();
+            if (p && p.catch) {
+                p.catch(err => {
+                    console.warn("Native fullscreen blocked:", err);
+                    document.body.classList.add("os-pseudo-fullscreen");
+                    if (typeof showToast === "function") showToast("Press F11 for Full Screen Mode", "📺");
+                });
+            }
         } else if (docEl.webkitRequestFullscreen) {
-            fsPromise = docEl.webkitRequestFullscreen();
+            docEl.webkitRequestFullscreen();
         } else if (docEl.mozRequestFullScreen) {
-            fsPromise = docEl.mozRequestFullScreen();
+            docEl.mozRequestFullScreen();
         } else if (docEl.msRequestFullscreen) {
-            fsPromise = docEl.msRequestFullscreen();
+            docEl.msRequestFullscreen();
+        } else {
+            document.body.classList.add("os-pseudo-fullscreen");
         }
     } catch (err) {
-        console.warn("Native fullscreen unavailable, active in pseudo-fullscreen mode:", err);
-    }
-
-    if (fsPromise && fsPromise.catch) {
-        fsPromise.catch(err => {
-            console.warn("Fullscreen request promise warning:", err);
-        });
+        console.warn("Fullscreen exception:", err);
+        document.body.classList.add("os-pseudo-fullscreen");
     }
 }
 
@@ -1980,7 +1986,7 @@ function exitOSFullScreen() {
 }
 
 function isOSFullScreen() {
-    return document.body.classList.contains("os-pseudo-fullscreen") || !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
 }
 
 function toggleOSFullScreen() {
@@ -2001,15 +2007,12 @@ function updateFullscreenButtonsUI() {
     if (startFullscreenBtn) startFullscreenBtn.textContent = isFS ? "📺 Exit Full Screen" : "📺 Switch to Full Screen";
 }
 
-// Initial Screen (First of Lock Screen) Event Listeners
+// Initial Screen Event Listeners
 if (startFullscreenBtn) {
     startFullscreenBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         enterOSFullScreen();
-        if (initialFullscreenOverlay) {
-            initialFullscreenOverlay.classList.add("hide-overlay");
-        }
-        showToast("Welcome to Arachne-OS Cyber Edition!", "🕷️");
+        if (typeof showToast === "function") showToast("Welcome to Arachne-OS Cyber Edition!", "🕷️");
     });
 }
 
@@ -2019,6 +2022,13 @@ if (continueWindowBtn) {
         if (initialFullscreenOverlay) {
             initialFullscreenOverlay.classList.add("hide-overlay");
         }
+    });
+}
+
+if (initialFullscreenOverlay) {
+    initialFullscreenOverlay.addEventListener("click", (e) => {
+        if (e.target.id === "continueWindowBtn") return;
+        enterOSFullScreen();
     });
 }
 
