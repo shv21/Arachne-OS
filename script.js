@@ -1,80 +1,379 @@
 // DOM Elements
-const lockScreen = document.querySelector(".descktop-lockScreen");
+const lockScreen = document.getElementById("lockScreen") || document.querySelector(".descktop-lockScreen");
 const mainScreen = document.querySelector(".descktop-main-screen");
-const loginBtn = document.querySelector(".login-btn");
+const unlockBtn = document.getElementById("unlockBtn") || document.querySelector(".login-btn");
+const lockPassInput = document.getElementById("lockPassInput");
+const lockPassToggle = document.getElementById("lockPassToggle");
+const lockPassError = document.getElementById("lockPassError");
+const lockUserCard = document.getElementById("lockUserCard");
 const startBtn = document.querySelector(".start");
 const appBox = document.querySelector(".appBox");
 
-// App launcher & Window elements
-const calcAppBtn = document.getElementById("calcAppBtn");
+// Lock Screen Elements
+const lockTimeEl = document.getElementById("lockTime");
+const lockDateEl = document.getElementById("lockDate");
+const lockGreetingEl = document.getElementById("lockGreeting");
+const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
+const lockWpCycleBtn = document.getElementById("lockWpCycleBtn");
+const lockAudioBtn = document.getElementById("lockAudioBtn");
+const lockAudioIcon = document.getElementById("lockAudioIcon");
+const lockMediaBtn = document.getElementById("lockMediaBtn");
+const lockPowerBtn = document.getElementById("lockPowerBtn");
+const switchUserBtn = document.getElementById("switchUserBtn");
+const clearAllNotifsBtn = document.getElementById("clearAllNotifsBtn");
+
+// Power Options Modal Elements
+const powerOverlay = document.getElementById("powerOverlay");
+const powerCancelBtn = document.getElementById("powerCancelBtn");
+const powerSleepBtn = document.getElementById("powerSleepBtn");
+const powerRestartBtn = document.getElementById("powerRestartBtn");
+const powerShutdownBtn = document.getElementById("powerShutdownBtn");
+
+// Desktop & Lock Fullscreen Elements
+const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
+
+// Wallpapers collection for cycling on lock screen
+const lockWallpapers = [
+    "./images/spider-man-across-3840x2160-11476.png",
+    "./images/spider-man-logo-10k-3840x2160-15274.png",
+    "./images/wallpaper1.jfif",
+    "./images/wallpaper2.jfif",
+    "./images/wallpaper3.jfif"
+];
+let currentWpIndex = 0;
+let isAudioMuted = false;
+let isMediaPlaying = false;
+
+// -------------------------------------------------------------
+// OS Fullscreen Management Control
+// -------------------------------------------------------------
+function toggleOSFullscreen() {
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch(err => {
+                console.warn("Native fullscreen blocked or unavailable, using fallback:", err);
+                togglePseudoFullscreen();
+            });
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else {
+            togglePseudoFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => console.warn(err));
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+
+function togglePseudoFullscreen() {
+    document.body.classList.toggle("os-pseudo-fullscreen");
+}
+
+// Lock Screen Header Fullscreen Button
+if (lockScreenFullscreenBtn) {
+    lockScreenFullscreenBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleOSFullscreen();
+    });
+}
+
+// Desktop Header Bar Fullscreen Button
+if (desktopFullscreenBtn) {
+    desktopFullscreenBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleOSFullscreen();
+    });
+}
+
+// -------------------------------------------------------------
+// Real-Time System Clock & Date Engine
+// -------------------------------------------------------------
+function updateSystemClock() {
+    const now = new Date();
+    
+    // Time formatting (12-Hour format hh:mm:ss AM/PM)
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHours = String(hours % 12 || 12).padStart(2, "0");
+    const timeString = `${displayHours}:${minutes}:${seconds} ${ampm}`;
+
+    // Date formatting (e.g. Wednesday, August 5, 2026)
+    const optionsDate = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    const dateString = now.toLocaleDateString('en-US', optionsDate);
+
+    // Update Lock Screen Clock
+    if (lockTimeEl) lockTimeEl.textContent = timeString;
+    if (lockDateEl) lockDateEl.textContent = dateString;
+
+    // Update Time-Aware Greeting
+    if (lockGreetingEl) {
+        if (hours >= 5 && hours < 12) lockGreetingEl.textContent = "Good Morning, Agent";
+        else if (hours >= 12 && hours < 17) lockGreetingEl.textContent = "Good Afternoon, Agent";
+        else if (hours >= 17 && hours < 22) lockGreetingEl.textContent = "Good Evening, Agent";
+        else lockGreetingEl.textContent = "Good Night, Agent";
+    }
+
+    // Update Desktop Clocks if present
+    const desktopTime = document.getElementById("desktopTime");
+    const desktopDate = document.getElementById("desktopDate");
+    const homeClockTime = document.getElementById("homeClockTime");
+    const homeClockDate = document.getElementById("homeClockDate");
+
+    if (desktopTime) desktopTime.textContent = timeString;
+    if (desktopDate) desktopDate.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    if (homeClockTime) homeClockTime.textContent = timeString;
+    if (homeClockDate) homeClockDate.textContent = dateString;
+}
+
+setInterval(updateSystemClock, 1000);
+updateSystemClock(); // Initial run
+
+// -------------------------------------------------------------
+// Unlock OS Functionality with Slide-Up Transition
+// -------------------------------------------------------------
+function performUnlockOS() {
+    if (!lockScreen) return;
+    
+    // Add slide-up transition animation
+    lockScreen.classList.add("lock-unlocking");
+    
+    setTimeout(() => {
+        mainScreen.classList.remove("hide");
+        lockScreen.classList.add("hide");
+        lockScreen.classList.remove("lock-unlocking");
+    }, 550);
+}
+
+if (unlockBtn) {
+    unlockBtn.addEventListener("click", () => {
+        performUnlockOS();
+    });
+}
+
+// Password / PIN Toggle Visibility
+if (lockPassToggle && lockPassInput) {
+    lockPassToggle.addEventListener("click", () => {
+        const isPassword = lockPassInput.getAttribute("type") === "password";
+        lockPassInput.setAttribute("type", isPassword ? "text" : "password");
+        lockPassToggle.textContent = isPassword ? "🙈" : "👁️";
+    });
+}
+
+// Keyboard shortcuts for lock screen
+document.addEventListener("keydown", (e) => {
+    // If lock screen is visible
+    if (lockScreen && !lockScreen.classList.contains("hide")) {
+        if (e.key === "Enter") {
+            performUnlockOS();
+        } else if (e.key === " " && document.activeElement !== lockPassInput) {
+            e.preventDefault();
+            if (lockPassInput) lockPassInput.focus();
+        } else if (e.key === "Escape" && powerOverlay && !powerOverlay.classList.contains("hide")) {
+            powerOverlay.classList.add("hide");
+        }
+    }
+});
+
+// Switch User Button
+if (switchUserBtn) {
+    switchUserBtn.addEventListener("click", () => {
+        alert("Switched to Arachne Guest Session (Guest Administrator Mode Active)");
+    });
+}
+
+// Cycle Lock Screen Wallpaper Directly from Lock Screen
+if (lockWpCycleBtn) {
+    lockWpCycleBtn.addEventListener("click", () => {
+        currentWpIndex = (currentWpIndex + 1) % lockWallpapers.length;
+        const newWp = lockWallpapers[currentWpIndex];
+        lockScreen.style.backgroundImage = `url("${newWp}")`;
+    });
+}
+
+// Audio Toggle Button on Lock Header
+if (lockAudioBtn) {
+    lockAudioBtn.addEventListener("click", () => {
+        isAudioMuted = !isAudioMuted;
+        if (lockAudioIcon) lockAudioIcon.textContent = isAudioMuted ? "🔇" : "🔊";
+        lockAudioBtn.title = isAudioMuted ? "Audio Muted" : "Sound Enabled";
+    });
+}
+
+// Ambient Audio Player Dock Item
+if (lockMediaBtn) {
+    lockMediaBtn.addEventListener("click", () => {
+        isMediaPlaying = !isMediaPlaying;
+        alert(isMediaPlaying ? "🎵 Playing: Arachne Cyberpunk Synthwave OST Track 01" : "⏸️ Paused: Arachne Audio Stream");
+    });
+}
+
+// Power Options Modal Events
+if (lockPowerBtn && powerOverlay) {
+    lockPowerBtn.addEventListener("click", () => {
+        powerOverlay.classList.remove("hide");
+    });
+}
+
+if (powerCancelBtn && powerOverlay) {
+    powerCancelBtn.addEventListener("click", () => {
+        powerOverlay.classList.add("hide");
+    });
+}
+
+if (powerSleepBtn) {
+    powerSleepBtn.addEventListener("click", () => {
+        powerOverlay.classList.add("hide");
+        document.body.style.filter = "brightness(0.05)";
+        const wakeNotice = document.createElement("div");
+        wakeNotice.id = "sleepWakeNotice";
+        wakeNotice.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#00ffff;font-size:18px;font-weight:bold;z-index:9999999;text-align:center;cursor:pointer;background:rgba(0,0,0,0.8);padding:20px;border-radius:16px;border:1px solid #00ffff;";
+        wakeNotice.innerHTML = "🌙 OS in Sleep Mode<br><span style='font-size:13px;color:#fff;'>Click anywhere or press any key to wake system</span>";
+        document.body.appendChild(wakeNotice);
+
+        const wakeUp = () => {
+            document.body.style.filter = "none";
+            if (wakeNotice) wakeNotice.remove();
+            document.removeEventListener("click", wakeUp);
+            document.removeEventListener("keydown", wakeUp);
+        };
+        setTimeout(() => {
+            document.addEventListener("click", wakeUp);
+            document.addEventListener("keydown", wakeUp);
+        }, 300);
+    });
+}
+
+if (powerRestartBtn) {
+    powerRestartBtn.addEventListener("click", () => {
+        powerOverlay.classList.add("hide");
+        document.body.style.filter = "blur(10px) brightness(0.2)";
+        alert("🔄 Arachne OS is Restarting... (Reloading system kernel)");
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    });
+}
+
+if (powerShutdownBtn) {
+    powerShutdownBtn.addEventListener("click", () => {
+        powerOverlay.classList.add("hide");
+        document.body.innerHTML = `
+            <div style="height:100vh;width:100vw;background:#050810;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ffffff;font-family:sans-serif;gap:20px;">
+                <div style="font-size:64px;filter:drop-shadow(0 0 20px #ff0055)">🕸️</div>
+                <h1 style="color:#ff0055">Arachne OS System Powered Off</h1>
+                <p style="color:rgba(255,255,255,0.7)">All sessions ended safely.</p>
+                <button onclick="location.reload()" style="background:linear-gradient(90deg,#00ffff,#00bfff);color:#000;border:none;padding:12px 28px;border-radius:24px;font-weight:bold;cursor:pointer;font-size:15px;box-shadow:0 0 25px #00ffff">⏻ Turn On Arachne OS</button>
+            </div>
+        `;
+    });
+}
+
+// Lock Notifications Dismiss & Clear All
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("notif-dismiss-btn")) {
+        const card = e.target.closest(".lock-notification-card");
+        if (card) {
+            card.style.opacity = "0";
+            card.style.transform = "translateX(50px)";
+            setTimeout(() => {
+                card.remove();
+                checkEmptyNotifs();
+            }, 300);
+        }
+    }
+});
+
+if (clearAllNotifsBtn) {
+    clearAllNotifsBtn.addEventListener("click", () => {
+        const notifList = document.getElementById("lockNotifList");
+        if (notifList) {
+            notifList.innerHTML = `<div style="color:rgba(255,255,255,0.5);font-size:12px;padding:10px 0;">No unread notifications</div>`;
+        }
+    });
+}
+
+function checkEmptyNotifs() {
+    const notifList = document.getElementById("lockNotifList");
+    if (notifList && notifList.children.length === 0) {
+        notifList.innerHTML = `<div style="color:rgba(255,255,255,0.5);font-size:12px;padding:10px 0;">No unread notifications</div>`;
+    }
+}
+
+// Calculator Elements & State Variables
 const calcWindow = document.getElementById("calcWindow");
 const calcHeader = document.getElementById("calcHeader");
 const closeCalcBtn = document.getElementById("closeCalcBtn");
 const minCalcBtn = document.getElementById("minCalcBtn");
-
-// Calculator Display Elements
 const calcOutput = document.getElementById("calcOutput");
 const calcHistory = document.getElementById("calcHistory");
 const calcButtons = document.querySelectorAll(".calc-btn");
 
-// Calculator Engine State
 let currentInput = "0";
 let previousInput = "";
 let selectedOperator = null;
 let shouldResetScreen = false;
-
-// -------------------------------------------------------------
-// Desktop & OS Navigation Logic
-// -------------------------------------------------------------
-
-loginBtn.addEventListener("click", () => {
-    mainScreen.classList.remove("hide");
-    lockScreen.classList.add("hide");
-});
-
-startBtn.addEventListener("click", () => {
-    appBox.classList.toggle("hide");
-});
 
 // Calculator Launcher Events
 const calcAppBtns = document.querySelectorAll(".calc-app-btn");
 calcAppBtns.forEach(btn => {
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        calcWindow.classList.remove("hide");
-        appBox.classList.add("hide"); // Auto-close start menu when app launches
-        bringToFront(calcWindow);
+        if (calcWindow) calcWindow.classList.remove("hide");
+        if (appBox) appBox.classList.add("hide");
+        if (calcWindow) bringToFront(calcWindow);
     });
 });
 
-closeCalcBtn.addEventListener("click", () => {
-    calcWindow.classList.add("hide");
-});
+if (closeCalcBtn && calcWindow) {
+    closeCalcBtn.addEventListener("click", () => {
+        calcWindow.classList.add("hide");
+    });
+}
 
-minCalcBtn.addEventListener("click", () => {
-    calcWindow.classList.add("hide");
-});
+if (minCalcBtn && calcWindow) {
+    minCalcBtn.addEventListener("click", () => {
+        calcWindow.classList.add("hide");
+    });
+}
 
 // Z-Index Window Management
 let highestZIndex = 100;
 function bringToFront(windowElement) {
+    if (!windowElement) return;
     highestZIndex++;
     windowElement.style.zIndex = highestZIndex;
 }
 
-calcWindow.addEventListener("mousedown", () => {
-    bringToFront(calcWindow);
-});
+if (calcWindow) {
+    calcWindow.addEventListener("mousedown", () => {
+        bringToFront(calcWindow);
+    });
+}
 
 // -------------------------------------------------------------
 // Draggable Window Functionality
 // -------------------------------------------------------------
 
 function makeDraggable(windowEl, headerEl) {
+    if (!windowEl || !headerEl) return;
     let offsetX = 0, offsetY = 0, isDragging = false;
 
     headerEl.addEventListener("mousedown", (e) => {
-        if (e.target.classList.contains("win-btn") || windowEl.classList.contains("maximized")) return; // Don't drag if clicking buttons or if maximized
+        if (e.target.classList.contains("win-btn") || windowEl.classList.contains("maximized")) return;
         isDragging = true;
         offsetX = e.clientX - windowEl.offsetLeft;
         offsetY = e.clientY - windowEl.offsetTop;
@@ -87,9 +386,8 @@ function makeDraggable(windowEl, headerEl) {
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
 
-        // Keep window within viewport bounds
         const maxWidth = window.innerWidth - windowEl.offsetWidth;
-        const maxHeight = window.innerHeight - windowEl.offsetHeight - 80; // keep above dock
+        const maxHeight = window.innerHeight - windowEl.offsetHeight - 80;
 
         newX = Math.max(0, Math.min(newX, maxWidth));
         newY = Math.max(0, Math.min(newY, maxHeight));
@@ -105,7 +403,9 @@ function makeDraggable(windowEl, headerEl) {
     }
 }
 
-makeDraggable(calcWindow, calcHeader);
+if (calcWindow && calcHeader) {
+    makeDraggable(calcWindow, calcHeader);
+}
 
 // -------------------------------------------------------------
 // Calculator Mathematical Logic
@@ -288,32 +588,42 @@ chromeAppBtns.forEach(btn => {
     });
 });
 
-chromeWindow.addEventListener("mousedown", () => {
-    bringToFront(chromeWindow);
-});
+if (chromeWindow) {
+    chromeWindow.addEventListener("mousedown", () => {
+        bringToFront(chromeWindow);
+    });
+}
 
-makeDraggable(chromeWindow, chromeHeader);
+if (chromeWindow && chromeHeader) {
+    makeDraggable(chromeWindow, chromeHeader);
+}
 
 // Window Controls
-closeChromeBtn.addEventListener("click", () => {
-    chromeWindow.classList.add("hide");
-});
+if (closeChromeBtn && chromeWindow) {
+    closeChromeBtn.addEventListener("click", () => {
+        chromeWindow.classList.add("hide");
+    });
+}
 
-minChromeBtn.addEventListener("click", () => {
-    chromeWindow.classList.add("hide");
-});
+if (minChromeBtn && chromeWindow) {
+    minChromeBtn.addEventListener("click", () => {
+        chromeWindow.classList.add("hide");
+    });
+}
 
 let isMaximized = false;
-maxChromeBtn.addEventListener("click", () => {
-    isMaximized = !isMaximized;
-    if (isMaximized) {
-        chromeWindow.classList.add("maximized");
-        maxChromeBtn.textContent = "❐";
-    } else {
-        chromeWindow.classList.remove("maximized");
-        maxChromeBtn.textContent = "□";
-    }
-});
+if (maxChromeBtn && chromeWindow) {
+    maxChromeBtn.addEventListener("click", () => {
+        isMaximized = !isMaximized;
+        if (isMaximized) {
+            chromeWindow.classList.add("maximized");
+            maxChromeBtn.textContent = "❐";
+        } else {
+            chromeWindow.classList.remove("maximized");
+            maxChromeBtn.textContent = "□";
+        }
+    });
+}
 
 // Tab Creation & Switching
 function createNewTab(initialUrl = "chrome://newtab", title = "New Tab") {
@@ -728,32 +1038,42 @@ vscodeAppBtns.forEach(btn => {
     });
 });
 
-vscodeWindow.addEventListener("mousedown", () => {
-    bringToFront(vscodeWindow);
-});
+if (vscodeWindow) {
+    vscodeWindow.addEventListener("mousedown", () => {
+        bringToFront(vscodeWindow);
+    });
+}
 
-makeDraggable(vscodeWindow, vscodeHeader);
+if (vscodeWindow && vscodeHeader) {
+    makeDraggable(vscodeWindow, vscodeHeader);
+}
 
 // Window Controls
-closeVscodeBtn.addEventListener("click", () => {
-    vscodeWindow.classList.add("hide");
-});
+if (closeVscodeBtn && vscodeWindow) {
+    closeVscodeBtn.addEventListener("click", () => {
+        vscodeWindow.classList.add("hide");
+    });
+}
 
-minVscodeBtn.addEventListener("click", () => {
-    vscodeWindow.classList.add("hide");
-});
+if (minVscodeBtn && vscodeWindow) {
+    minVscodeBtn.addEventListener("click", () => {
+        vscodeWindow.classList.add("hide");
+    });
+}
 
 let isVsCodeMaximized = false;
-maxVscodeBtn.addEventListener("click", () => {
-    isVsCodeMaximized = !isVsCodeMaximized;
-    if (isVsCodeMaximized) {
-        vscodeWindow.classList.add("maximized");
-        maxVscodeBtn.textContent = "❐";
-    } else {
-        vscodeWindow.classList.remove("maximized");
-        maxVscodeBtn.textContent = "□";
-    }
-});
+if (maxVscodeBtn && vscodeWindow) {
+    maxVscodeBtn.addEventListener("click", () => {
+        isVsCodeMaximized = !isVsCodeMaximized;
+        if (isVsCodeMaximized) {
+            vscodeWindow.classList.add("maximized");
+            maxVscodeBtn.textContent = "❐";
+        } else {
+            vscodeWindow.classList.remove("maximized");
+            maxVscodeBtn.textContent = "□";
+        }
+    });
+}
 
 // File Explorer Click Listeners
 fileTreeItems.forEach(item => {
@@ -1048,32 +1368,42 @@ filesAppBtns.forEach(btn => {
     });
 });
 
-filesWindow.addEventListener("mousedown", () => {
-    bringToFront(filesWindow);
-});
+if (filesWindow) {
+    filesWindow.addEventListener("mousedown", () => {
+        bringToFront(filesWindow);
+    });
+}
 
-makeDraggable(filesWindow, filesHeader);
+if (filesWindow && filesHeader) {
+    makeDraggable(filesWindow, filesHeader);
+}
 
 // Window Controls
-closeFilesBtn.addEventListener("click", () => {
-    filesWindow.classList.add("hide");
-});
+if (closeFilesBtn && filesWindow) {
+    closeFilesBtn.addEventListener("click", () => {
+        filesWindow.classList.add("hide");
+    });
+}
 
-minFilesBtn.addEventListener("click", () => {
-    filesWindow.classList.add("hide");
-});
+if (minFilesBtn && filesWindow) {
+    minFilesBtn.addEventListener("click", () => {
+        filesWindow.classList.add("hide");
+    });
+}
 
 let isFilesMaximized = false;
-maxFilesBtn.addEventListener("click", () => {
-    isFilesMaximized = !isFilesMaximized;
-    if (isFilesMaximized) {
-        filesWindow.classList.add("maximized");
-        maxFilesBtn.textContent = "❐";
-    } else {
-        filesWindow.classList.remove("maximized");
-        maxFilesBtn.textContent = "□";
-    }
-});
+if (maxFilesBtn && filesWindow) {
+    maxFilesBtn.addEventListener("click", () => {
+        isFilesMaximized = !isFilesMaximized;
+        if (isFilesMaximized) {
+            filesWindow.classList.add("maximized");
+            maxFilesBtn.textContent = "❐";
+        } else {
+            filesWindow.classList.remove("maximized");
+            maxFilesBtn.textContent = "□";
+        }
+    });
+}
 
 // Sidebar Quick Access Click Handling
 filesSidebarItems.forEach(item => {
@@ -1323,32 +1653,42 @@ settingsAppBtns.forEach(btn => {
     });
 });
 
-settingsWindow.addEventListener("mousedown", () => {
-    bringToFront(settingsWindow);
-});
+if (settingsWindow) {
+    settingsWindow.addEventListener("mousedown", () => {
+        bringToFront(settingsWindow);
+    });
+}
 
-makeDraggable(settingsWindow, settingsHeader);
+if (settingsWindow && settingsHeader) {
+    makeDraggable(settingsWindow, settingsHeader);
+}
 
 // Window Controls
-closeSettingsBtn.addEventListener("click", () => {
-    settingsWindow.classList.add("hide");
-});
+if (closeSettingsBtn && settingsWindow) {
+    closeSettingsBtn.addEventListener("click", () => {
+        settingsWindow.classList.add("hide");
+    });
+}
 
-minSettingsBtn.addEventListener("click", () => {
-    settingsWindow.classList.add("hide");
-});
+if (minSettingsBtn && settingsWindow) {
+    minSettingsBtn.addEventListener("click", () => {
+        settingsWindow.classList.add("hide");
+    });
+}
 
 let isSettingsMaximized = false;
-maxSettingsBtn.addEventListener("click", () => {
-    isSettingsMaximized = !isSettingsMaximized;
-    if (isSettingsMaximized) {
-        settingsWindow.classList.add("maximized");
-        maxSettingsBtn.textContent = "❐";
-    } else {
-        settingsWindow.classList.remove("maximized");
-        maxSettingsBtn.textContent = "□";
-    }
-});
+if (maxSettingsBtn && settingsWindow) {
+    maxSettingsBtn.addEventListener("click", () => {
+        isSettingsMaximized = !isSettingsMaximized;
+        if (isSettingsMaximized) {
+            settingsWindow.classList.add("maximized");
+            maxSettingsBtn.textContent = "❐";
+        } else {
+            settingsWindow.classList.remove("maximized");
+            maxSettingsBtn.textContent = "□";
+        }
+    });
+}
 
 // Sidebar Navigation Tabs
 settingsNavItems.forEach(item => {
@@ -1657,13 +1997,114 @@ if (resetSettingsBtn) {
 initOSWallpapers();
 
 // -------------------------------------------------------------
+// Universal OS App Launcher & Dock Event Delegation
+// -------------------------------------------------------------
+document.addEventListener("click", (e) => {
+    // 1. Lock Screen Unlock Button
+    const unlockTarget = e.target.closest("#unlockBtn") || e.target.closest(".primary-unlock-btn") || e.target.closest(".login-btn");
+    if (unlockTarget) {
+        e.preventDefault();
+        performUnlockOS();
+        return;
+    }
+
+    // 2. Lock Screen Fullscreen Button
+    const fsTarget = e.target.closest("#lockScreenFullscreenBtn") || e.target.closest(".secondary-fs-btn") || e.target.closest(".lock-fs-btn");
+    if (fsTarget) {
+        e.preventDefault();
+        toggleOSFullscreen();
+        return;
+    }
+
+    // 3. Start Menu Toggle Button
+    const startTarget = e.target.closest(".start");
+    if (startTarget) {
+        if (appBox) appBox.classList.toggle("hide");
+        return;
+    }
+
+    // 4. Chrome Application Launch
+    const chromeTarget = e.target.closest(".chrome-app-btn");
+    if (chromeTarget) {
+        const chromeWin = document.getElementById("chromeWindow");
+        if (chromeWin) {
+            chromeWin.classList.remove("hide");
+            bringToFront(chromeWin);
+            if (typeof createNewTab === "function" && tabs.length === 0) {
+                createNewTab();
+            }
+        }
+        if (appBox) appBox.classList.add("hide");
+        return;
+    }
+
+    // 5. VS Code Application Launch
+    const vscodeTarget = e.target.closest(".vscode-app-btn");
+    if (vscodeTarget) {
+        const vscodeWin = document.getElementById("vscodeWindow");
+        if (vscodeWin) {
+            vscodeWin.classList.remove("hide");
+            bringToFront(vscodeWin);
+            if (typeof openVsCodeFile === "function" && openVsCodeTabs.length === 0) {
+                openVsCodeFile("script.js");
+            }
+        }
+        if (appBox) appBox.classList.add("hide");
+        return;
+    }
+
+    // 6. File Explorer Application Launch
+    const filesTarget = e.target.closest(".files-app-btn");
+    if (filesTarget) {
+        const filesWin = document.getElementById("filesWindow");
+        if (filesWin) {
+            filesWin.classList.remove("hide");
+            bringToFront(filesWin);
+            if (typeof renderCurrentFolder === "function") {
+                renderCurrentFolder();
+            }
+        }
+        if (appBox) appBox.classList.add("hide");
+        return;
+    }
+
+    // 7. Calculator Application Launch
+    const calcTarget = e.target.closest(".calc-app-btn");
+    if (calcTarget) {
+        const calcWin = document.getElementById("calcWindow");
+        if (calcWin) {
+            calcWin.classList.remove("hide");
+            bringToFront(calcWin);
+        }
+        if (appBox) appBox.classList.add("hide");
+        return;
+    }
+
+    // 8. Settings Application Launch
+    const settingsTarget = e.target.closest(".settings-app-btn");
+    if (settingsTarget) {
+        const settingsWin = document.getElementById("settingsWindow");
+        if (settingsWin) {
+            settingsWin.classList.remove("hide");
+            bringToFront(settingsWin);
+        }
+        if (appBox) appBox.classList.add("hide");
+        return;
+    }
+
+    // 9. Auto-Close Start Menu on Outside Click
+    if (appBox && !appBox.classList.contains("hide")) {
+        if (!e.target.closest(".appBox") && !e.target.closest(".start")) {
+            appBox.classList.add("hide");
+        }
+    }
+});
+
+// -------------------------------------------------------------
 // Real-Time Clock, Full Screen Toggle & Live Weather Module
 // -------------------------------------------------------------
 
 // DOM Clock Elements
-const lockTimeEl = document.getElementById("lockTime");
-const lockDateEl = document.getElementById("lockDate");
-
 const desktopTimeEl = document.getElementById("desktopTime");
 const desktopDateEl = document.getElementById("desktopDate");
 
@@ -1671,11 +2112,6 @@ const homeClockTimeEl = document.getElementById("homeClockTime");
 const homeClockDateEl = document.getElementById("homeClockDate");
 
 // Fullscreen Toggle Elements
-const initialFullscreenOverlay = document.getElementById("initialFullscreenOverlay");
-const startFullscreenBtn = document.getElementById("startFullscreenBtn");
-const continueWindowBtn = document.getElementById("continueWindowBtn");
-const lockScreenFullscreenBtn = document.getElementById("lockScreenFullscreenBtn");
-const desktopFullscreenBtn = document.getElementById("desktopFullscreenBtn");
 const standaloneFullscreenBtn = document.getElementById("fullscreenBtn");
 
 // Weather & Location Elements
@@ -1785,7 +2221,7 @@ function updateRealTimeClock() {
     
     // Update Lock Screen Clock
     if (lockTimeEl) lockTimeEl.textContent = fullTimeString;
-    if (lockDateEl) lockDateEl.textContent = `${fullDateString} (${currentOSUserLocationName})`;
+    if (lockDateEl) lockDateEl.textContent = fullDateString;
     
     // Update Desktop Header Clock
     if (desktopTimeEl) desktopTimeEl.textContent = fullTimeString;

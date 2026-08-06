@@ -10,52 +10,51 @@
 
 <body>
 
-    <!-- Initial Start OS Fullscreen Screen (First of Lock Screen) -->
-    <div class="initial-fullscreen-overlay" id="initialFullscreenOverlay">
-        <div class="initial-card">
-            <div class="initial-spider-logo">🕷️</div>
-            <h1 class="initial-title">Arachne OS</h1>
-            <p class="initial-subtitle">Cyber Spider Edition • Web Desktop Platform</p>
 
-            <div class="initial-notif-box">
-                <span class="initial-notif-badge">🔔 OS NOTICE</span>
-                <p class="initial-notif-msg">For full view of OS switch to full screen</p>
+    <!-- Power Options Modal Overlay -->
+    <div class="power-overlay hide" id="powerOverlay">
+        <div class="power-modal">
+            <div class="power-modal-icon" id="powerModalIcon">⚡</div>
+            <h2 class="power-modal-title" id="powerModalTitle">System Power</h2>
+            <p class="power-modal-msg" id="powerModalMsg">Select a power operation for Arachne OS</p>
+
+            <div class="power-options-grid">
+                <button class="power-opt-btn sleep-btn" id="powerSleepBtn">
+                    <span class="power-opt-icon">🌙</span>
+                    <span class="power-opt-label">Sleep</span>
+                </button>
+                <button class="power-opt-btn restart-btn" id="powerRestartBtn">
+                    <span class="power-opt-icon">🔄</span>
+                    <span class="power-opt-label">Restart</span>
+                </button>
+                <button class="power-opt-btn shutdown-btn" id="powerShutdownBtn">
+                    <span class="power-opt-icon">⏻</span>
+                    <span class="power-opt-label">Shut Down</span>
+                </button>
             </div>
 
-            <div class="initial-actions">
-                <button class="primary-fs-btn" id="startFullscreenBtn">📺 Switch to Full Screen</button>
-                <button class="secondary-skip-btn" id="continueWindowBtn">Continue to Lock Screen →</button>
-            </div>
+            <button class="power-cancel-btn" id="powerCancelBtn">Cancel</button>
         </div>
     </div>
 
-    <div class="descktop-lockScreen">
+    <div class="descktop-lockScreen" id="lockScreen">
         <div class="overlay"></div>
 
-        <div class="lock-screen-content">
-            <!-- Real-Time Clock on Lock Screen -->
+        <div class="lock-screen-content clean-minimal">
+            <!-- Minimal Real-Time Clock & Date -->
             <div class="lock-clock-container">
                 <div class="lock-time" id="lockTime">00:00:00 AM</div>
                 <div class="lock-date" id="lockDate">Wednesday, August 5, 2026</div>
             </div>
 
-            <!-- Lock Screen System Notification Banner -->
-            <div class="lock-notification-card">
-                <div class="lock-notif-header">
-                    <span class="notif-badge">🔔 SYSTEM NOTICE</span>
-                    <span class="notif-time">Just now</span>
-                </div>
-                <div class="lock-notif-body">
-                    <p class="lock-notif-msg">For full view of OS switch to full screen</p>
-                </div>
-                <div class="lock-notif-actions">
-                    <button class="fullscreen-btn" id="lockScreenFullscreenBtn">📺 Switch to Full Screen</button>
-                </div>
-            </div>
-
-            <!-- Lock Screen Action Controls -->
-            <div class="lock-actions">
-                <button class="login-btn">Unlock OS</button>
+            <!-- Two Clean Action Buttons -->
+            <div class="lock-clean-actions">
+                <button class="primary-unlock-btn" id="unlockBtn">
+                    <span>🔓 Unlock OS</span>
+                </button>
+                <button class="secondary-fs-btn" id="lockScreenFullscreenBtn">
+                    <span>📺 Switch to Fullscreen</span>
+                </button>
             </div>
         </div>
     </div>
