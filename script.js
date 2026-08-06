@@ -98,49 +98,9 @@ if (desktopFullscreenBtn) {
 }
 
 // -------------------------------------------------------------
-// Real-Time System Clock & Date Engine
+// Real-Time System Clock & Greeting Helper
 // -------------------------------------------------------------
-function updateSystemClock() {
-    const now = new Date();
-    
-    // Time formatting (12-Hour format hh:mm:ss AM/PM)
-    let hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const displayHours = String(hours % 12 || 12).padStart(2, "0");
-    const timeString = `${displayHours}:${minutes}:${seconds} ${ampm}`;
-
-    // Date formatting (e.g. Wednesday, August 5, 2026)
-    const optionsDate = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    const dateString = now.toLocaleDateString('en-US', optionsDate);
-
-    // Update Lock Screen Clock
-    if (lockTimeEl) lockTimeEl.textContent = timeString;
-    if (lockDateEl) lockDateEl.textContent = dateString;
-
-    // Update Time-Aware Greeting
-    if (lockGreetingEl) {
-        if (hours >= 5 && hours < 12) lockGreetingEl.textContent = "Good Morning, Agent";
-        else if (hours >= 12 && hours < 17) lockGreetingEl.textContent = "Good Afternoon, Agent";
-        else if (hours >= 17 && hours < 22) lockGreetingEl.textContent = "Good Evening, Agent";
-        else lockGreetingEl.textContent = "Good Night, Agent";
-    }
-
-    // Update Desktop Clocks if present
-    const desktopTime = document.getElementById("desktopTime");
-    const desktopDate = document.getElementById("desktopDate");
-    const homeClockTime = document.getElementById("homeClockTime");
-    const homeClockDate = document.getElementById("homeClockDate");
-
-    if (desktopTime) desktopTime.textContent = timeString;
-    if (desktopDate) desktopDate.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    if (homeClockTime) homeClockTime.textContent = timeString;
-    if (homeClockDate) homeClockDate.textContent = dateString;
-}
-
-setInterval(updateSystemClock, 1000);
-updateSystemClock(); // Initial run
+// (Unified with updateRealTimeClock engine below to prevent timer conflicts)
 
 // -------------------------------------------------------------
 // Unlock OS Functionality with Slide-Up Transition
@@ -2219,6 +2179,14 @@ function updateRealTimeClock() {
         shortDateString = now.toLocaleDateString('en-US');
     }
     
+    const lockTimeEl = document.getElementById("lockTime");
+    const lockDateEl = document.getElementById("lockDate");
+    const desktopTimeEl = document.getElementById("desktopTime");
+    const desktopDateEl = document.getElementById("desktopDate");
+    const homeClockTimeEl = document.getElementById("homeClockTime");
+    const homeClockDateEl = document.getElementById("homeClockDate");
+    const lockGreetingEl = document.getElementById("lockGreeting");
+
     // Update Lock Screen Clock
     if (lockTimeEl) lockTimeEl.textContent = fullTimeString;
     if (lockDateEl) lockDateEl.textContent = fullDateString;
@@ -2229,7 +2197,19 @@ function updateRealTimeClock() {
     
     // Update Home Screen Widget Clock
     if (homeClockTimeEl) homeClockTimeEl.textContent = fullTimeString;
-    if (homeClockDateEl) homeClockDateEl.textContent = `${fullDateString} • 📍 ${currentOSUserLocationName}`;
+    if (homeClockDateEl) {
+        const displayLoc = (currentOSUserLocationName && !currentOSUserLocationName.includes("Auto")) ? currentOSUserLocationName : "Local Time";
+        homeClockDateEl.textContent = `${fullDateString} • 📍 ${displayLoc}`;
+    }
+
+    // Time-Aware Greeting
+    const hours = now.getHours();
+    if (lockGreetingEl) {
+        if (hours >= 5 && hours < 12) lockGreetingEl.textContent = "Good Morning, Agent";
+        else if (hours >= 12 && hours < 17) lockGreetingEl.textContent = "Good Afternoon, Agent";
+        else if (hours >= 17 && hours < 22) lockGreetingEl.textContent = "Good Evening, Agent";
+        else lockGreetingEl.textContent = "Good Night, Agent";
+    }
 }
 
 // Start Real-Time Clock Interval (Updates every 1000ms)
@@ -2449,15 +2429,19 @@ const weatherPresets = [
 let currentWeatherIndex = 0;
 
 function updateWeatherUI(data) {
-    if (weatherIcon) weatherIcon.textContent = data.icon;
-    if (weatherTemp) weatherTemp.textContent = data.temp;
-    if (weatherCity) weatherCity.textContent = data.city;
-    if (weatherCond) weatherCond.textContent = `${data.desc} • 💧 58%`;
+    if (!data) return;
+    const displayCity = (data.city && !data.city.includes("Auto")) ? data.city : "Cyber City";
+    const displayHumidity = data.humidity !== undefined ? `${data.humidity}%` : "58%";
     
-    if (homeWeatherIcon) homeWeatherIcon.textContent = data.icon;
-    if (homeWeatherTemp) homeWeatherTemp.textContent = data.temp;
-    if (homeWeatherDesc) homeWeatherDesc.textContent = data.desc;
-    if (homeWeatherDetails) homeWeatherDetails.textContent = data.details;
+    if (weatherIcon) weatherIcon.textContent = data.icon || "🌤️";
+    if (weatherTemp) weatherTemp.textContent = data.temp || "28°C";
+    if (weatherCity) weatherCity.textContent = displayCity;
+    if (weatherCond) weatherCond.textContent = `${data.desc || "Partly Cloudy"} • 💧 ${displayHumidity}`;
+    
+    if (homeWeatherIcon) homeWeatherIcon.textContent = data.icon || "🌤️";
+    if (homeWeatherTemp) homeWeatherTemp.textContent = data.temp || "28°C";
+    if (homeWeatherDesc) homeWeatherDesc.textContent = data.desc || "Partly Cloudy";
+    if (homeWeatherDetails) homeWeatherDetails.textContent = data.details || `📍 ${displayCity} • 💧 ${displayHumidity}`;
 }
 
 async function fetchCityNameAndWeather(lat, lon) {
@@ -2488,7 +2472,7 @@ async function fetchCityNameAndWeather(lat, lon) {
             const temp = Math.round(data.current_weather.temperature);
             const code = data.current_weather.weathercode;
             const wind = Math.round(data.current_weather.windspeed);
-            const humidity = (data.hourly && data.hourly.relativehumidity_2m && data.hourly.relativehumidity_2m.length) ? data.hourly.relativehumidity_2m[0] : 60;
+            const humidity = (data.hourly && data.hourly.relativehumidity_2m && data.hourly.relativehumidity_2m.length) ? data.hourly.relativehumidity_2m[0] : 58;
             
             let icon = "🌤️";
             let desc = "Partly Cloudy";
@@ -2504,6 +2488,7 @@ async function fetchCityNameAndWeather(lat, lon) {
                 temp: `${temp}°C`,
                 icon: icon,
                 desc: desc,
+                humidity: humidity,
                 details: `📍 ${cityName} • 💧 ${humidity}% • 💨 ${wind} km/h`
             };
 
