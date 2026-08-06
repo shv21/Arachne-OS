@@ -11,6 +11,7 @@
 Arachne OS is a full-featured, browser-based WebOS built from scratch using pure Vanilla HTML5, CSS3, and JavaScript. Designed for the **Hack Club Stardance Challenge**, it seamlessly combines glassmorphism aesthetic, interactive multi-window management, built-in productivity applications, real-time weather & clock synchronization, and session controls into a smooth single-page application.
 
 ---
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/5819c3f3-364f-4c21-959e-c5f87b5f9820" />
 
 ## 🌟 Key Features & UI Overview
 
