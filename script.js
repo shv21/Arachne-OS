@@ -2187,28 +2187,36 @@ function updateRealTimeClock() {
     const homeClockDateEl = document.getElementById("homeClockDate");
     const lockGreetingEl = document.getElementById("lockGreeting");
 
-    // Update Lock Screen Clock
-    if (lockTimeEl) lockTimeEl.textContent = fullTimeString;
-    if (lockDateEl) lockDateEl.textContent = fullDateString;
+    // Helper to prevent rapid DOM repaints & flickering
+    function safeSetText(element, newText) {
+        if (element && element.textContent !== newText) {
+            element.textContent = newText;
+        }
+    }
+
+    // Update Lock Screen Clock (Flicker-Free Text Guard)
+    safeSetText(lockTimeEl, fullTimeString);
+    safeSetText(lockDateEl, fullDateString);
     
     // Update Desktop Header Clock
-    if (desktopTimeEl) desktopTimeEl.textContent = fullTimeString;
-    if (desktopDateEl) desktopDateEl.textContent = shortDateString;
+    safeSetText(desktopTimeEl, fullTimeString);
+    safeSetText(desktopDateEl, shortDateString);
     
     // Update Home Screen Widget Clock
-    if (homeClockTimeEl) homeClockTimeEl.textContent = fullTimeString;
+    safeSetText(homeClockTimeEl, fullTimeString);
     if (homeClockDateEl) {
         const displayLoc = (currentOSUserLocationName && !currentOSUserLocationName.includes("Auto")) ? currentOSUserLocationName : "Local Time";
-        homeClockDateEl.textContent = `${fullDateString} • 📍 ${displayLoc}`;
+        safeSetText(homeClockDateEl, `${fullDateString} • 📍 ${displayLoc}`);
     }
 
     // Time-Aware Greeting
     const hours = now.getHours();
     if (lockGreetingEl) {
-        if (hours >= 5 && hours < 12) lockGreetingEl.textContent = "Good Morning, Agent";
-        else if (hours >= 12 && hours < 17) lockGreetingEl.textContent = "Good Afternoon, Agent";
-        else if (hours >= 17 && hours < 22) lockGreetingEl.textContent = "Good Evening, Agent";
-        else lockGreetingEl.textContent = "Good Night, Agent";
+        let greeting = "Good Night, Agent";
+        if (hours >= 5 && hours < 12) greeting = "Good Morning, Agent";
+        else if (hours >= 12 && hours < 17) greeting = "Good Afternoon, Agent";
+        else if (hours >= 17 && hours < 22) greeting = "Good Evening, Agent";
+        safeSetText(lockGreetingEl, greeting);
     }
 }
 
@@ -2428,20 +2436,29 @@ const weatherPresets = [
 
 let currentWeatherIndex = 0;
 
+let isWeatherFetching = false;
+let hasLoadedLiveWeather = false;
+
+function safeSetWeatherText(element, newText) {
+    if (element && element.textContent !== newText) {
+        element.textContent = newText;
+    }
+}
+
 function updateWeatherUI(data) {
     if (!data) return;
     const displayCity = (data.city && !data.city.includes("Auto")) ? data.city : "Cyber City";
     const displayHumidity = data.humidity !== undefined ? `${data.humidity}%` : "58%";
     
-    if (weatherIcon) weatherIcon.textContent = data.icon || "🌤️";
-    if (weatherTemp) weatherTemp.textContent = data.temp || "28°C";
-    if (weatherCity) weatherCity.textContent = displayCity;
-    if (weatherCond) weatherCond.textContent = `${data.desc || "Partly Cloudy"} • 💧 ${displayHumidity}`;
+    safeSetWeatherText(weatherIcon, data.icon || "🌤️");
+    safeSetWeatherText(weatherTemp, data.temp || "28°C");
+    safeSetWeatherText(weatherCity, displayCity);
+    safeSetWeatherText(weatherCond, `${data.desc || "Partly Cloudy"} • 💧 ${displayHumidity}`);
     
-    if (homeWeatherIcon) homeWeatherIcon.textContent = data.icon || "🌤️";
-    if (homeWeatherTemp) homeWeatherTemp.textContent = data.temp || "28°C";
-    if (homeWeatherDesc) homeWeatherDesc.textContent = data.desc || "Partly Cloudy";
-    if (homeWeatherDetails) homeWeatherDetails.textContent = data.details || `📍 ${displayCity} • 💧 ${displayHumidity}`;
+    safeSetWeatherText(homeWeatherIcon, data.icon || "🌤️");
+    safeSetWeatherText(homeWeatherTemp, data.temp || "28°C");
+    safeSetWeatherText(homeWeatherDesc, data.desc || "Partly Cloudy");
+    safeSetWeatherText(homeWeatherDetails, data.details || `📍 ${displayCity} • 💧 ${displayHumidity}`);
 }
 
 async function fetchCityNameAndWeather(lat, lon) {
@@ -2492,38 +2509,51 @@ async function fetchCityNameAndWeather(lat, lon) {
                 details: `📍 ${cityName} • 💧 ${humidity}% • 💨 ${wind} km/h`
             };
 
+            hasLoadedLiveWeather = true;
             updateWeatherUI(liveData);
             updateLocationStatusUI();
-            updateRealTimeClock();
             return;
         }
     } catch (e) {
         console.warn("Live weather fetch error:", e);
     }
 
-    updateWeatherUI(weatherPresets[currentWeatherIndex]);
+    // Fallback to preset only if no live weather has ever loaded
+    if (!hasLoadedLiveWeather) {
+        updateWeatherUI(weatherPresets[currentWeatherIndex]);
+    }
 }
 
 async function fetchLiveWeather() {
-    if (navigator.geolocation && !localStorage.getItem("arachne_user_lat")) {
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                currentOSUserLat = lat;
-                currentOSUserLon = lon;
-                localStorage.setItem("arachne_user_lat", lat);
-                localStorage.setItem("arachne_user_lon", lon);
-                await fetchCityNameAndWeather(lat, lon);
-            },
-            (err) => {
-                console.warn("Auto-geolocation popup closed or denied:", err);
-                fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
-            },
-            { timeout: 10000 }
-        );
-    } else {
-        fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
+    if (isWeatherFetching) return;
+    isWeatherFetching = true;
+    
+    try {
+        if (navigator.geolocation && !localStorage.getItem("arachne_user_lat")) {
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    currentOSUserLat = lat;
+                    currentOSUserLon = lon;
+                    localStorage.setItem("arachne_user_lat", lat);
+                    localStorage.setItem("arachne_user_lon", lon);
+                    await fetchCityNameAndWeather(lat, lon);
+                    isWeatherFetching = false;
+                },
+                async (err) => {
+                    console.warn("Auto-geolocation popup closed or denied:", err);
+                    await fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
+                    isWeatherFetching = false;
+                },
+                { timeout: 8000 }
+            );
+        } else {
+            await fetchCityNameAndWeather(currentOSUserLat || 28.6139, currentOSUserLon || 77.2090);
+            isWeatherFetching = false;
+        }
+    } catch (err) {
+        isWeatherFetching = false;
     }
 }
 
